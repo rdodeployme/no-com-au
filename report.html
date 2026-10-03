@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Report dumping · no.com.au</title>
+<meta name="description" content="Report dumped rubbish in three taps. Snap it, pin it, tap what it is.">
+<meta name="theme-color" content="#F4F3EF">
+<meta property="og:title" content="Report dumping · no.com.au">
+<meta property="og:description" content="Report dumped rubbish in three taps. Snap it, pin it, tap what it is.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='11.5' fill='white' stroke='%23D8261C' stroke-width='6'/%3E%3Cpath d='M16 16V9.5' stroke='%23141414' stroke-width='3.2' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;700;800;900&family=Overpass+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css"><link rel="stylesheet" href="no.css?v=1791040865">
+</head>
+<body class="page-report">
+<header class="rp-head">
+  <a class="logo" href="index.html" aria-label="no.com.au home">n<span class="o"></span>.<small>com.au</small></a>
+  <p class="rp-note">Left: the app residents use. Right: what the council gets. Try both.</p>
+  <a class="link" href="index.html">Back to the site</a>
+</header>
+<main class="rp">
+  <div class="phone">
+    <div class="app" id="app">
+      <div class="app-top">
+        <button class="ib" id="back" type="button" aria-label="Back"></button>
+        <div class="dots" aria-hidden="true"><i class="on"></i><i></i><i></i></div>
+        <a class="ib" id="close" href="index.html" aria-label="Close"></a>
+      </div>
+      <div class="app-main" id="main">
+
+        <section class="scr on" data-s="1" aria-label="Step 1 of 3: photo">
+          <h2>Snap it</h2>
+          <p class="sub">Get the whole pile in if you can.</p>
+          <label class="snap" id="snap"><input type="file" accept="image/*" capture="environment" id="cam" aria-label="Take a photo"><span id="snap-ic"></span><b>Take a photo</b><span class="snap-sub">Opens your camera</span></label>
+          <div class="shots" id="shots"></div>
+          <label class="alt-link" id="gal-wrap"><input type="file" accept="image/*" multiple id="gal" aria-label="Choose photos"><span id="gal-ic"></span>Choose from your photos</label>
+          <p class="hint">No photo? That's fine, you can skip it.</p>
+        </section>
+
+        <section class="scr scr-map" data-s="2" aria-label="Step 2 of 3: location">
+          <div class="head"><h2>Pin it</h2><p class="sub">Move the map so the pin sits on the rubbish.</p></div>
+          <div class="mapwrap">
+            <div id="pmap" aria-label="Map"></div>
+            <div class="center-pin" id="cpin" aria-hidden="true"></div>
+            <div class="map-search">
+              <div class="box"><span id="q-ic"></span><input id="q" type="search" placeholder="Search an address" autocomplete="off" aria-label="Search an address"></div>
+              <div class="sugg" id="sugg" hidden></div>
+            </div>
+            <button class="maptype" id="maptype" type="button" aria-pressed="false">Satellite</button>
+            <button class="locate" id="locate" type="button"><span id="loc-ic"></span><span id="loc-t">Use my location</span></button>
+          </div>
+        </section>
+
+        <section class="scr" data-s="3" aria-label="Step 3 of 3: what is it">
+          <h2>What's there?</h2>
+          <p class="sub">Tap everything you can see.</p>
+          <div class="tiles" id="tiles"></div>
+          <div class="haz-note" id="haz" hidden><b>Don't touch it.</b> Keep clear of anything that might be asbestos, chemicals, gas bottles or syringes. We'll flag it as a possible hazard and copy in EPA Victoria. If someone's in danger, call 000.</div>
+          <h3 class="q">How much?</h3>
+          <div class="sizes4" id="sizes"></div>
+          <h3 class="q">Blocking a footpath or road?</h3>
+          <div class="seg" data-k="blocking"><button type="button" aria-pressed="false" data-v="yes">Yes</button><button type="button" aria-pressed="true" data-v="no">No</button></div>
+          <h3 class="q">When did it turn up?</h3>
+          <div class="seg" data-k="seen"><button type="button" aria-pressed="false" data-v="Today">Today</button><button type="button" aria-pressed="false" data-v="Yesterday">Yesterday</button><button type="button" aria-pressed="false" data-v="This week">This week</button><button type="button" aria-pressed="true" data-v="Not sure">Not sure</button></div>
+          <details class="more">
+            <summary>Add more detail <span class="small">(optional)</span></summary>
+            <label class="fld">Anything that helps the crew<textarea class="in" id="notes" placeholder="e.g. behind the bus shelter, been there a week"></textarea></label>
+            <label class="fld">Saw it being dumped? Vehicle rego<input class="in" id="rego" placeholder="e.g. 1AB 2CD" autocomplete="off"></label>
+            <p class="hint" style="text-align:left">Regos only go to the council and EPA Victoria. We never publish them.</p>
+          </details>
+        </section>
+
+        <section class="scr" data-s="done" aria-label="Report sent">
+          <div class="done">
+            <div class="ring" id="ring"><div class="ring-in"><div class="lbl" id="d-lbl">On the clock</div><div class="clock" id="d-clock">00:00:00</div><div class="rsub" id="d-sub"></div></div></div>
+            <h2 id="d-title">Sent. It's on the clock.</h2>
+            <p class="d-to" id="d-to"></p>
+            <ol class="tl" id="tl"></ol>
+            <div id="d-receipt"></div>
+            <button class="btn ink block see-council" id="see-council" type="button">See what the council gets</button>
+            <div class="d-actions">
+              <button class="btn ghost block" id="share" type="button"></button>
+              <a class="btn ghost block" id="view" href="#">Open the public page</a>
+            </div>
+            <form class="updates" id="updates">
+              <b>Want a text when it's collected?</b>
+              <div class="row"><input class="in" id="contact" placeholder="Mobile or email" autocomplete="email" aria-label="Mobile or email"><button class="btn ink" type="submit">Save</button></div>
+              <p class="hint" style="text-align:left;margin-top:8px">Only used for updates on this report. Never sent to the council.</p>
+            </form>
+            <button class="again" id="again" type="button">Report something else</button>
+          </div>
+        </section>
+      </div>
+      <div class="app-foot" id="foot">
+        <div id="extra"></div>
+        <button class="btn lg block" id="next" type="button">Next</button>
+      </div>
+    </div>
+  </div>
+
+  <aside class="council" id="council" aria-label="What the council receives">
+    <div class="cs-top"><span class="label">The council's side</span><button class="ib cs-close" id="cs-close" type="button" aria-label="Close"></button></div>
+    <div class="cs-empty" id="cs-empty">
+      <span id="cs-ic"></span>
+      <h3>Waiting for a report</h3>
+      <p>Fill in the app. The moment you send, the report lands here as an email the council can act on with one tap: say they're on it, book a crew, pass it to whoever owns the land, or mark it collected.</p>
+      <p class="small">Every press changes the resident's phone straight away.</p>
+    </div>
+    <div id="cs-mail" hidden>
+      <div class="mail">
+        <div class="mail-meta">
+          <div><span>From</span><b>no.com.au reports</b></div>
+          <div><span>To</span><b id="m-to"></b></div>
+          <div id="m-ccrow"><span>Cc</span><b id="m-cc"></b></div>
+          <div><span>Subject</span><b id="m-subj"></b></div>
+        </div>
+        <div class="mail-body">
+          <div class="m-top"><div class="m-photos" id="m-photos"></div><div class="m-map" id="m-map"></div></div>
+        </div>
+        <div class="mail-actions" id="m-actions">
+          <button class="btn ink" id="a-ack" type="button">We're on it</button>
+          <button class="btn ink" id="a-book" type="button">Book a crew</button>
+          <button class="btn ghost" id="a-pass" type="button">Not ours</button>
+          <button class="btn green" id="a-done" type="button">Collected</button>
+        </div>
+        <div class="opts" id="a-opts" hidden></div>
+        <div class="mail-body"><dl id="m-dl"></dl></div>
+      </div>
+      <p class="cs-hint" id="cs-hint">Try it: press a button and watch the phone.</p>
+    </div>
+  </aside>
+  <div class="scrim" id="scrim" hidden></div>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script src="no.js?v=1791040865"></script>
+<script>
+(function(){
+  var $=NO.$, $$=NO.$$, I=NO.icon, esc=NO.esc;
+  var R={photos:[],types:[],size:null,blocking:false,seen:'Not sure'};
+  var step=1, map=null, center=null, place=null, report=null, dupOf=null, dismissed={}, looking=false, lookSeq=0, lookT=null, mmap=null, demo=false;
+
+  /* static icons */
+  $('#back').innerHTML=I('back'); $('#close').innerHTML=I('close'); $('#cs-close').innerHTML=I('close');
+  $('#snap-ic').innerHTML=I('camera'); $('#gal-ic').innerHTML=I('gallery'); $('#q-ic').innerHTML=I('search');
+  $('#loc-ic').innerHTML=I('locate'); $('#cpin').innerHTML=I('pin'); $('#cs-ic').innerHTML=I('mail');
+  $('#share').innerHTML=I('share')+'Share this report';
+  $('#a-ack').insertAdjacentHTML('afterbegin',I('check')); $('#a-book').insertAdjacentHTML('afterbegin',I('crew'));
+  $('#a-pass').insertAdjacentHTML('afterbegin',I('pass')); $('#a-done').insertAdjacentHTML('afterbegin',I('recycle'));
+
+  /* ---------- steps ---------- */
+  function show(s){
+    step=s;
+    $$('.scr').forEach(function(x){x.classList.toggle('on',x.dataset.s===String(s));});
+    $$('.dots i').forEach(function(d,i){d.classList.toggle('on',s==='done'||i<s);});
+    $('#back').style.visibility=(s===1||s==='done')?'hidden':'visible';
+    $('#foot').hidden=(s==='done');
+    $('#main').scrollTop=0;
+    if(s===2) initMap();
+    foot();
+  }
+  $('#back').onclick=function(){ if(step>1&&step!=='done') show(step-1); };
+  $('#next').onclick=function(){
+    NO.buzz();
+    if(step===1) show(2);
+    else if(step===2){ if(!map||map.getZoom()<16) return; show(3); }
+    else if(step===3){ if(R.types.length) send(); }
+  };
+
+  function foot(){
+    var x=$('#extra'), n=$('#next');
+    n.disabled=false; x.innerHTML='';
+    if(step===1){ n.textContent=R.photos.length?'Next':'Skip photo'; }
+    if(step===2){
+      var z=map?map.getZoom():0, rt=place?NO.route(place,R.types):null, h='';
+      if(dupOf){
+        h+='<div class="dup"><p>Someone reported '+esc(NO.typeList(dupOf.types).toLowerCase())+' here '+NO.human(Date.now()-dupOf.created)+' ago. Same pile?</p><div class="row"><button class="btn ink" type="button" data-dup="yes">Yes, add mine</button><button class="btn ghost" type="button" data-dup="no">No, it\'s different</button></div></div>';
+      }
+      var addr = z<15 ? 'Zoom in and put the pin on the rubbish' : (!place||looking) ? 'Finding the address' : (place.street ? place.street+(place.suburb?', '+place.suburb:'') : (place.suburb||'Pinned spot'));
+      h+='<div class="place"><div class="pl-addr">'+I('pin')+'<span>'+esc(addr)+'</span></div>';
+      if(rt&&z>=15&&!looking) h+='<div class="pl-to">Goes to <b>'+esc(rt.to)+'</b> <span class="why">'+esc(rt.why)+'</span></div>';
+      h+='</div>';
+      x.innerHTML=h;
+      n.textContent=z<16?'Zoom in on the spot':'Next';
+      n.disabled=z<16;
+    }
+    if(step===3){
+      var rt3=NO.route(place||{},R.types);
+      if(R.types.length) x.innerHTML='<p class="sendto">Sending to <b>'+esc(rt3.to)+'</b>'+(rt3.cc.length?', copied to '+esc(rt3.cc.join(' and ')):'')+'</p>';
+      n.textContent=R.types.length?'Send report':'Tap what\'s there';
+      n.disabled=!R.types.length;
+    }
+  }
+  $('#extra').addEventListener('click',function(e){
+    var b=e.target.closest('[data-dup]'); if(!b||!dupOf) return;
+    if(b.dataset.dup==='no'){ dismissed[dupOf.id]=1; dupOf=null; foot(); return; }
+    var r=NO.store.get(dupOf.id); NO.addEvent(r,'confirmed',{n:1});
+    if(R.photos.length) r.photos=(r.photos||[]).concat(R.photos).slice(0,6);
+    NO.store.save(r); location.href='r.html?added=1#'+r.id;
+  });
+
+  /* ---------- step 1: photos ---------- */
+  function addFiles(list){
+    var files=Array.prototype.slice.call(list||[]).filter(function(f){return /^image\//.test(f.type);}).slice(0,4-R.photos.length);
+    Promise.all(files.map(function(f){return NO.compress(f,900);})).then(function(urls){ R.photos=R.photos.concat(urls); shots(); foot(); });
+  }
+  function shots(){
+    var n=R.photos.length;
+    $('#snap').hidden=n>0; $('#gal-wrap').hidden=n>0;
+    $('#shots').innerHTML=R.photos.map(function(u,i){return '<div class="shot"><img src="'+NO.img(u,600,600)+'" alt="Your photo '+(i+1)+'"><button type="button" data-rm="'+i+'" aria-label="Remove photo">'+I('close')+'</button></div>';}).join('')+
+      (n&&n<4?'<label class="shot add"><input type="file" accept="image/*" multiple aria-label="Add another photo">'+I('plus')+'<span>Add another</span></label>':'');
+    var a=$('#shots input'); if(a) a.onchange=function(e){addFiles(e.target.files);e.target.value='';};
+  }
+  $('#cam').onchange=function(e){addFiles(e.target.files);e.target.value='';};
+  $('#gal').onchange=function(e){addFiles(e.target.files);e.target.value='';};
+  $('#shots').addEventListener('click',function(e){var b=e.target.closest('[data-rm]');if(!b)return;R.photos.splice(+b.dataset.rm,1);shots();foot();});
+
+  /* ---------- step 2: map ---------- */
+  function initMap(){
+    if(map){ setTimeout(function(){map.invalidateSize();},50); return; }
+    map=L.map('pmap',{zoomControl:false}).setView([-37.8136,144.9631],11);
+    var street=NO.tiles(map,true,'street'), sat=null;
+    $('#maptype').onclick=function(){
+      var on=!map.getContainer().classList.contains('sat');
+      if(on){ sat=sat||NO.satellite(); sat.addTo(map); street.remove(); } else { street.addTo(map); if(sat) sat.remove(); }
+      map.getContainer().classList.toggle('sat',on); this.textContent=on?'Map':'Satellite'; this.setAttribute('aria-pressed',on);
+    };
+    L.control.zoom({position:'bottomleft'}).addTo(map);
+    NO.store.all().forEach(function(r){ if(NO.status(r)!=='done') NO.marker(r,{interactive:false}).addTo(map); });
+    map.on('moveend',onMove);
+    setTimeout(function(){map.invalidateSize();onMove();},60);
+    try{ navigator.permissions.query({name:'geolocation'}).then(function(p){ if(p.state==='granted') locate(); }); }catch(e){}
+  }
+  function onMove(){
+    var c=map.getCenter(); center={lat:c.lat,lon:c.lng};
+    var z=map.getZoom();
+    dupOf=null;
+    if(z>=15){
+      var best=null,bd=150;
+      NO.store.all().forEach(function(r){ if(NO.status(r)==='done'||dismissed[r.id]) return; var d=NO.dist(center.lat,center.lon,r.lat,r.lon); if(d<bd){bd=d;best=r;} });
+      dupOf=best;
+      looking=true; var seq=++lookSeq; clearTimeout(lookT);
+      lookT=setTimeout(function(){ NO.lookup(center.lat,center.lon).then(function(p){ if(seq!==lookSeq) return; place=p; looking=false; foot(); }); },450);
+    } else { place=null; looking=false; }
+    foot();
+  }
+  function locate(){
+    var t=$('#loc-t');
+    if(!navigator.geolocation){ NO.toast('Your browser can\'t share its location. Search instead.'); return; }
+    t.textContent='Finding you';
+    navigator.geolocation.getCurrentPosition(function(p){ t.textContent='Use my location'; map.setView([p.coords.latitude,p.coords.longitude],18); },
+      function(){ t.textContent='Use my location'; NO.toast('Couldn\'t get your location. Search or move the map.'); },{enableHighAccuracy:true,timeout:10000});
+  }
+  $('#locate').onclick=locate;
+  var qT=null;
+  $('#q').addEventListener('input',function(){
+    var v=this.value.trim(); clearTimeout(qT);
+    if(v.length<4){ $('#sugg').hidden=true; return; }
+    qT=setTimeout(function(){ NO.search(v).then(function(list){
+      var s=$('#sugg'); s.hidden=!list.length;
+      s.innerHTML=list.map(function(x,i){return '<button type="button" data-i="'+i+'">'+esc(x.label)+'</button>';}).join('');
+      s.onclick=function(e){var b=e.target.closest('[data-i]');if(!b)return;var x=list[+b.dataset.i];map.setView([x.lat,x.lon],18);s.hidden=true;$('#q').value='';$('#q').blur();};
+    }); },500);
+  });
+
+  /* ---------- step 3: what ---------- */
+  $('#tiles').innerHTML=NO.TYPES.map(function(t){return '<button type="button" class="tile'+(t.hazard?' hz':'')+'" aria-pressed="false" data-t="'+t.id+'">'+I(t.id)+'<span>'+t.label+'</span></button>';}).join('');
+  $('#tiles').onclick=function(e){
+    var b=e.target.closest('.tile'); if(!b) return; NO.buzz();
+    var on=b.getAttribute('aria-pressed')!=='true'; b.setAttribute('aria-pressed',on);
+    R.types=$$('#tiles .tile[aria-pressed=true]').map(function(x){return x.dataset.t;});
+    $('#haz').hidden=R.types.indexOf('hazard')<0; foot();
+  };
+  $('#sizes').innerHTML=NO.SIZES.map(function(s){return '<button type="button" class="sz" aria-pressed="false" data-v="'+s.id+'">'+I(s.icon)+'<span>'+s.label+'</span><small>'+s.sub+'</small></button>';}).join('');
+  $('#sizes').onclick=function(e){
+    var b=e.target.closest('.sz'); if(!b) return; NO.buzz();
+    var was=b.getAttribute('aria-pressed')==='true';
+    $$('#sizes .sz').forEach(function(x){x.setAttribute('aria-pressed','false');});
+    if(!was) b.setAttribute('aria-pressed','true'); R.size=was?null:b.dataset.v;
+  };
+  $$('.seg').forEach(function(g){ g.onclick=function(e){
+    var b=e.target.closest('button'); if(!b) return;
+    $$('button',g).forEach(function(x){x.setAttribute('aria-pressed','false');}); b.setAttribute('aria-pressed','true');
+    if(g.dataset.k==='blocking') R.blocking=b.dataset.v==='yes'; else R.seen=b.dataset.v;
+  };});
+
+  /* ---------- send ---------- */
+  function send(){
+    var now=Date.now(), p=place||{}, rt=NO.route(p,R.types);
+    var r={id:NO.newId(),sample:false,created:now,suburb:p.suburb?p.suburb+(p.state?' '+p.state:''):'Pinned location',state:p.state||'',lga:p.lga||'',kind:p.kind||'council',
+      lat:center.lat,lon:center.lon,place:p.street||'',types:R.types.slice(),size:R.size,photos:R.photos.slice(),alt:'Photo from the person who reported it',
+      seen:R.seen,blocking:R.blocking,notes:$('#notes').value.trim(),rego:$('#rego').value.trim().toUpperCase(),contact:'',
+      to:rt.to,why:rt.why,cc:rt.cc,items:null,events:[{k:'reported',t:now},{k:'notified',t:now,to:rt.to}]};
+    rt.cc.forEach(function(c){ r.events.push({k:'cc',t:now,to:c}); });
+    if(demo) r.demo=true;
+    NO.store.add(r); report=r;
+    show('done'); render();
+    if(window.matchMedia('(min-width:761px)').matches) $('#cs-hint').classList.add('pulse');
+  }
+
+  /* ---------- the resident's view after sending ---------- */
+  function cur(){ return report ? (NO.store.get(report.id)||report) : null; }
+  function render(){ renderDone(); renderCouncil(); }
+  function renderDone(){
+    var r=cur(); if(!r) return;
+    var s=NO.status(r), c=NO.collectedAt(r), due=NO.due(r.created);
+    $('#ring').classList.toggle('done',s==='done');
+    $('#d-lbl').textContent=s==='done'?'Collected in':'On the clock';
+    NO.clockEl($('#d-clock'),r.created,c);
+    $('#d-sub').textContent=s==='done'?NO.when(c):'Target: '+NO.dayl(due)+', 5pm';
+    $('#d-title').textContent={open:'Sent. It\'s on the clock.',ack:'They\'re on it.',sched:'Collection booked.',done:'Gone. Thanks for reporting it.'}[s];
+    var passed=r.events.filter(function(e){return e.k==='passed';}).pop();
+    $('#d-to').innerHTML= s==='done' ? 'Collected '+NO.human(c-r.created)+' after you reported it. Here\'s what happened to it.' :
+      '<b>'+esc(r.to)+'</b> has it'+(passed?', passed on by '+esc(passed.by||'the council'):'')+'.'+(r.cc.length?' Copied to '+esc(r.cc.join(' and '))+'.':'');
+    $('#tl').innerHTML=timeline(r);
+    var rec=$('#d-receipt');
+    if(s==='done'&&!rec.dataset.on){ rec.dataset.on=1; rec.innerHTML=NO.receiptHTML(r,{cls:'on-white print-in'}); NO.$$('.print-in > *',rec).forEach(function(el,i){el.style.animationDelay=(i*0.07)+'s';}); }
+    $('#view').href='r.html#'+r.id;
+    ringTick();
+  }
+  function timeline(r){
+    var ev=r.events, last=function(k){return ev.filter(function(e){return e.k===k;}).pop();};
+    var c=last('collected'), a=last('ack'), b=last('scheduled'), rc=last('receipt'), rows=[];
+    function row(on,txt,t,cls){ return '<li class="'+(on?'on ':'')+(cls||'')+'"><i></i><div>'+esc(txt)+'</div><span>'+(on&&t?NO.time(t):on?'':'Waiting')+'</span></li>'; }
+    ev.forEach(function(e){ if(['reported','notified','cc','confirmed','passed'].indexOf(e.k)>-1) rows.push(row(true,NO.eventText(e,r),e.t,e.k==='reported'?'r':'')); });
+    if(a||!c) rows.push(row(!!a,a?NO.eventText(a,r):'On it',a&&a.t));
+    if(b||!c) rows.push(row(!!b,b?NO.eventText(b,r):'Collection booked',b&&b.t));
+    rows.push(row(!!c,c?NO.eventText(c,r):'Collected',c&&c.t,'g'));
+    rows.push(row(!!rc,'Recycled, receipt issued',rc&&rc.t,'g'));
+    return rows.join('');
+  }
+  function ringTick(){
+    var r=cur(); if(!r) return; var c=NO.collectedAt(r), due=NO.due(r.created);
+    var p=c?100:Math.max(1.5,Math.min(100,(Date.now()-r.created)/(due-r.created)*100));
+    $('#ring').style.setProperty('--p',p.toFixed(2));
+  }
+  setInterval(ringTick,1000);
+
+  $('#share').onclick=function(){
+    var r=cur(); if(!r) return; var url=location.href.replace(/report\.html.*$/,'r.html#'+r.id);
+    if(navigator.share){ navigator.share({title:'Dumped rubbish reported on no.com.au',url:url}).catch(function(){}); }
+    else if(navigator.clipboard){ navigator.clipboard.writeText(url).then(function(){NO.toast('Link copied');},function(){NO.toast(url);}); }
+    else NO.toast(url);
+  };
+  $('#updates').onsubmit=function(e){
+    e.preventDefault(); var v=$('#contact').value.trim(); if(!v){$('#contact').focus();return;}
+    var r=cur(); r.contact=v; NO.store.save(r);
+    this.innerHTML='<b>Done.</b> We\'ll let you know when it moves. <span class="small">(Prototype: nothing is sent.)</span>';
+  };
+  $('#again').onclick=function(){ location.href='report.html'; };
+
+  /* ---------- the council's side ---------- */
+  function subject(r){
+    var hz=r.types.indexOf('hazard')>-1, what=NO.typeList(r.types.filter(function(t){return t!=='hazard';})).toLowerCase();
+    return (hz?'Possible hazard: ':'')+'Dumped '+(what||'rubbish')+(r.suburb&&r.suburb!=='Pinned location'?' in '+r.suburb.replace(/ (VIC|QLD|NSW|SA|WA|TAS|NT|ACT)$/,''):'')+' ('+r.id+')';
+  }
+  function renderCouncil(){
+    var r=cur(); if(!r){ $('#cs-empty').hidden=false; $('#cs-mail').hidden=true; return; }
+    $('#cs-empty').hidden=true; $('#cs-mail').hidden=false;
+    $('#m-to').textContent=r.to; $('#m-ccrow').hidden=!r.cc.length; $('#m-cc').textContent=r.cc.join(', ');
+    $('#m-subj').textContent=subject(r);
+    var ph=$('#m-photos');
+    if(!ph.dataset.done){ ph.dataset.done=1; ph.innerHTML=r.photos.length?r.photos.map(function(u){return '<img src="'+NO.img(u,500,400)+'" alt="Photo of the dumped rubbish">';}).join(''):'<div class="m-nophoto">'+I('camera')+'<span>No photo sent</span></div>'; }
+    if(!mmap){
+      mmap=L.map('m-map',{zoomControl:false,dragging:false,scrollWheelZoom:false,doubleClickZoom:false,boxZoom:false,keyboard:false,touchZoom:false,attributionControl:false}).setView([r.lat,r.lon],17);
+      NO.tiles(mmap,true,'street'); L.circleMarker([r.lat,r.lon],{radius:10,color:'#fff',weight:3,fillColor:'#D8261C',fillOpacity:1}).addTo(mmap);
+    }
+    var s=NO.status(r), c=NO.collectedAt(r);
+    var rows=[
+      ['Status',NO.chip(r)+' <span class="mono m-clock" data-from="'+r.created+'"'+(c?' data-until="'+c+'"':'')+'></span>'],
+      ['Reported',esc(NO.when(r.created))],
+      ['Where',esc([r.place,r.suburb].filter(Boolean).join(', '))+'<br><span class="small mono">'+r.lat.toFixed(5)+', '+r.lon.toFixed(5)+'</span>'],
+      ['Why you',esc(r.why)],
+      ['What',esc(NO.typeList(r.types))],
+      ['How much',esc(r.size?NO.S[r.size].label:'Not given')],
+      ['Blocking',r.blocking?'<b>Yes, a footpath or road</b>':'No'],
+      ['Turned up',esc(r.seen||'Not sure')]
+    ];
+    if(r.notes) rows.push(['Notes',esc(r.notes)]);
+    if(r.rego) rows.push(['Vehicle rego','<b class="mono">'+esc(r.rego)+'</b> <span class="small">(for investigation only)</span>']);
+    $('#m-dl').innerHTML=rows.map(function(x){return '<dt>'+x[0]+'</dt><dd>'+x[1]+'</dd>';}).join('');
+    NO.bindClocks($('#m-dl'));
+    $('#a-ack').disabled=s!=='open';
+    $('#a-book').disabled=s==='sched'||s==='done';
+    $('#a-pass').disabled=s==='done';
+    $('#a-done').disabled=s==='done';
+    if(s==='done'){ opts(''); $('#cs-hint').textContent='That\'s the full loop: reported, sent, collected and recycled, with the resident watching each step.'; $('#cs-hint').classList.remove('pulse'); }
+  }
+  function opts(h){ var o=$('#a-opts'); o.innerHTML=h; o.hidden=!h; }
+  function save(r){ NO.store.save(r); NO.buzz(); render(); }
+  $('#a-ack').onclick=function(){ var r=cur(); if(NO.status(r)!=='open') return; NO.addEvent(r,'ack',{by:r.to}); opts(''); save(r); };
+  $('#a-book').onclick=function(){
+    opts('<p class="label">Who\'s collecting?</p>'+
+      '<button class="opt" type="button" data-book="Recycle Group crew"><span><b>Recycle Group crew</b><small>Next working day, 7 to 11am. Recycled, with a receipt.</small></span>'+I('right')+'</button>'+
+      '<button class="opt" type="button" data-book="Council crew"><span><b>Our own crew</b><small>Your team collects it. The clock and receipt still work.</small></span>'+I('right')+'</button>');
+  };
+  $('#a-pass').onclick=function(){
+    var r=cur(), st=r.state||'VIC';
+    var list=st==='QLD'?['Department of Transport and Main Roads','Queensland Rail','Queensland Parks and Wildlife Service','Private landowner']:
+      ['Department of Transport and Planning','VicTrack','Parks Victoria','Melbourne Water','Private landowner'];
+    var council=NO.councilName(r.lga); if(council&&r.to!==council) list.unshift(council);
+    opts('<p class="label">Whose land is it?</p>'+list.filter(function(x){return x!==r.to;}).map(function(x){return '<button class="opt" type="button" data-pass="'+esc(x)+'"><span><b>'+esc(x)+'</b></span>'+I('right')+'</button>';}).join('')+
+      '<p class="small" style="margin-top:4px">The report moves to them with everything attached. The clock keeps running, so nothing gets lost in a handover.</p>');
+  };
+  $('#a-done').onclick=function(){
+    var r=cur(), items=r.items||NO.defaultItems(r.types);
+    var rowsH=items.map(function(it,i){
+      var sel='';
+      if(it.t==='mattress') sel='<select data-size="'+i+'"><option value="single">Single</option><option value="queen" selected>Double or queen</option><option value="king">King</option></select>';
+      if(it.t==='couch') sel='<select data-size="'+i+'"><option value="1">1 seater</option><option value="2">2 seater</option><option value="3" selected>3 seater</option></select>';
+      return '<div class="qrow"><span>'+I(it.t)+'<b>'+esc(NO.T[it.t].label)+'</b>'+sel+'</span><span class="qty"><button type="button" data-q="'+i+'" data-d="-1" aria-label="Fewer">'+I('minus')+'</button><b data-qv="'+i+'">'+it.qty+'</b><button type="button" data-q="'+i+'" data-d="1" aria-label="More">'+I('plus')+'</button></span></div>';
+    }).join('');
+    opts('<p class="label">What did the crew pick up?</p>'+rowsH+'<button class="btn green block" type="button" id="confirm-done">'+I('check')+'Mark collected and issue receipt</button>');
+    var o=$('#a-opts');
+    o.onclick=function(e){
+      var q=e.target.closest('[data-q]');
+      if(q){ var i=+q.dataset.q; items[i].qty=Math.max(1,Math.min(20,items[i].qty+ +q.dataset.d)); $('[data-qv="'+i+'"]',o).textContent=items[i].qty; return; }
+      var b=e.target.closest('[data-book],[data-pass]'); if(b) return;
+      if(e.target.closest('#confirm-done')){
+        NO.$$('select[data-size]',o).forEach(function(s){ items[+s.dataset.size].size=s.value; });
+        var rr=cur(), crew=(rr.events.filter(function(x){return x.k==='scheduled';}).pop()||{}).crew||'Council crew';
+        rr.items=items; NO.addEvent(rr,'collected',{by:crew}); rr.events.push({k:'receipt',t:Date.now()+1500});
+        opts(''); save(rr);
+      }
+    };
+  };
+  $('#a-opts').addEventListener('click',function(e){
+    var r=cur(), b=e.target.closest('[data-book]'), p=e.target.closest('[data-pass]');
+    if(b){ if(NO.status(r)==='open') NO.addEvent(r,'ack',{by:r.to}); NO.addEvent(r,'scheduled',{at:NO.window(r.created),crew:b.dataset.book}); opts(''); save(r); }
+    if(p){ var to=p.dataset.pass; NO.addEvent(r,'passed',{to:to,by:r.to}); r.why='Passed on by '+r.to; r.to=to; opts(''); save(r); }
+  });
+
+  /* phone layout: council as a sheet */
+  function sheet(open){ $('#council').classList.toggle('open',open); $('#scrim').hidden=!open; }
+  $('#see-council').onclick=function(){ sheet(true); setTimeout(function(){ if(mmap) mmap.invalidateSize(); },320); };
+  $('#cs-close').onclick=function(){ sheet(false); };
+  $('#scrim').onclick=function(){ sheet(false); };
+
+  NO.onChange(function(){ if(report) render(); });
+  show(1);
+
+  /* hooks used by Richard's version (tour.html) to drive the app */
+  window.NODEMO={
+    begin:function(){ demo=true; NO.store.purge(function(r){return r.demo;}); },
+    photo:function(){ R.photos=['1703296958227-d01823347876']; shots(); foot(); },
+    step:function(n){ show(n); },
+    pin:function(lat,lon){ initMap(); setTimeout(function(){ map.flyTo([lat,lon],18,{duration:1.8}); },250); },
+    pick:function(types,size){
+      types.forEach(function(t,i){ setTimeout(function(){ var b=$('#tiles [data-t="'+t+'"]'); if(b&&b.getAttribute('aria-pressed')!=='true') b.click(); },i*450); });
+      if(size) setTimeout(function(){ var s=$('#sizes [data-v="'+size+'"]'); if(s&&s.getAttribute('aria-pressed')!=='true') s.click(); },types.length*450+250);
+    },
+    send:function(){ if(!center&&map){ var c=map.getCenter(); center={lat:c.lat,lon:c.lng}; } if(!R.types.length) R.types=['couch']; send(); },
+    sheet:function(o){ if(window.matchMedia('(max-width:860px)').matches){ sheet(o); if(o) setTimeout(function(){ if(mmap) mmap.invalidateSize(); },320); } },
+    ack:function(){ var b=$('#a-ack'); if(b&&!b.disabled) b.click(); },
+    book:function(){ var b=$('#a-book'); if(b&&!b.disabled){ b.click(); setTimeout(function(){ var x=$('[data-book="Recycle Group crew"]'); if(x) x.click(); },600); } },
+    collect:function(){ var b=$('#a-done'); if(b&&!b.disabled){ b.click(); setTimeout(function(){ var x=$('#confirm-done'); if(x) x.click(); },700); } },
+    toReceipt:function(){ var r=$('#d-receipt'); if(r) r.scrollIntoView({behavior:'smooth',block:'start'}); },
+    id:function(){ return report&&report.id; }
+  };
+})();
+</script>
+</body>
+</html>

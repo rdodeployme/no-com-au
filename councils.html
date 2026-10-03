@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>For councils and land managers · no.com.au</title>
+<meta name="description" content="Dumped rubbish reports routed to the right owner, collected next working day, recycled and reported back. A Recycle Group initiative.">
+<meta name="theme-color" content="#F4F3EF">
+<meta property="og:title" content="For councils and land managers · no.com.au">
+<meta property="og:description" content="Dumped rubbish reports routed to the right owner, collected next working day, recycled and reported back. A Recycle Group initiative.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='11.5' fill='white' stroke='%23D8261C' stroke-width='6'/%3E%3Cpath d='M16 16V9.5' stroke='%23141414' stroke-width='3.2' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;700;800;900&family=Overpass+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="no.css?v=1791040865">
+</head>
+<body class="page-councils">
+<header class="site-head"><div class="wrap bar">
+<a class="logo" href="index.html" aria-label="no.com.au home">n<span class="o"></span>.<small>com.au</small></a>
+<nav aria-label="Main"><a href="index.html#how">How it works</a><a href="map.html">Live map</a><a href="rid.html">Get rid of stuff</a><a href="councils.html" aria-current="page">For councils</a></nav>
+<a class="btn sm" href="report.html">Report dumping</a>
+<button class="menu-btn" type="button" data-menu aria-label="Menu" aria-expanded="false"><svg class="ic" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M5 9h22M5 16h22M5 23h22"/></svg></button>
+</div></header>
+<main>
+<section class="c-hero">
+  <div class="wrap">
+    <h1 class="h-xl">Every dumped pile, collected and <span class="red">proven.</span></h1>
+    <div class="c-hero-grid">
+      <div>
+        <p class="lede">Residents get a 20-second way to report dumping. You get one place to act on it: sent to the right owner, collected the next working day, recycled, and reported back with a receipt.</p>
+        <div class="cta-row" style="margin-top:30px"><a class="btn lg" href="console.html">Open the demo console</a><a class="btn ghost lg" href="#pilot">Start a pilot</a></div>
+      </div>
+      <div class="inbox" aria-label="Sample inbox">
+        <div class="inbox-top"><span class="logo">n<span class="o"></span>.</span><span>Inbox</span><span class="note-sample">Sample data</span></div>
+        <div id="inbox"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec white">
+  <div class="wrap">
+    <div class="head-row"><h2 class="h-l">One service, three parts</h2><p class="lede">Take the reports on their own, or hand us the whole job, from the footpath to the recovery figures.</p></div>
+    <div class="pillars" id="pillars"></div>
+  </div>
+</section>
+
+<section class="sec dark">
+  <div class="wrap split">
+    <div>
+      <h2 class="h-l">Why a public clock helps you</h2>
+      <p class="lede" style="margin-top:20px">Residents stop chasing when they can see a report is in hand. Fast work gets noticed instead of disappearing into a request system.</p>
+      <ul class="bul" id="clockbul"></ul>
+    </div>
+    <div>
+      <div class="bigclock done" style="max-width:420px;margin:0 auto"><div class="lbl">Collected in</div><div class="v" id="demo-clock">19:42:08</div><div class="s">Reported Tuesday 9:14am. Collected Wednesday 4:56am.</div></div>
+      <div class="card" style="max-width:420px;margin:12px auto 0;color:var(--ink)"><ol class="tl" id="demo-tl"></ol></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap split">
+    <div class="sign" aria-label="Example hotspot sign">
+      <span class="logo">n<span class="o"></span>.<small>com.au</small></span>
+      <h4>This spot is on the clock.</h4>
+      <p>Dumping here gets reported, collected and investigated.</p>
+      <div class="qr"><div id="qr"></div><span>Seen dumped rubbish? Scan to report it.</span></div>
+    </div>
+    <div>
+      <h2 class="h-l">Stop it coming back</h2>
+      <p class="lede" style="margin:20px 0 6px">Collecting it is half the job. The other half is making dumping harder and getting rid of stuff easier.</p>
+      <ul class="bul light-bul" id="prevbul"></ul>
+    </div>
+  </div>
+</section>
+
+<section class="sec white">
+  <div class="wrap">
+    <div class="head-row"><h2 class="h-l">Not a council? Same service on any land.</h2><p class="lede">Dumping doesn't stop at council boundaries, and nor do we.</p></div>
+    <div class="who">
+      <div><b>State roads</b><span>Verges, ramps and lay-bys, and burnt-out cars.</span></div>
+      <div><b>Rail</b><span>Fence lines, corridors and station car parks.</span></div>
+      <div><b>Parks and reserves</b><span>Track heads, car parks and fire trails.</span></div>
+      <div><b>Developers and property managers</b><span>Vacant lots, rentals and sites between tenants.</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap">
+    <div class="head-row"><h2 class="h-l">Start free. Add collection when you're ready.</h2><p class="lede">Pricing is set with each council or land manager. Pilot pricing on request.</p></div>
+    <div class="plans" id="plans"></div>
+  </div>
+</section>
+
+<section class="sec white" id="pilot">
+  <div class="wrap pilot">
+    <div>
+      <h2 class="h-l">Start with a 90&#8209;day pilot</h2>
+      <p class="lede" style="margin-top:20px">One area, real reports, real collections. At the end you'll have the numbers to decide.</p>
+      <ol>
+        <li><span class="w">Weeks 1 to 2</span><div><b>Set up</b><span>We map the area, agree your targets and send reports to your team's inbox. QR signs go up at known hotspots.</span></div></li>
+        <li><span class="w">Weeks 3 to 12</span><div><b>Run it</b><span>Residents report, crews collect the next working day, and every collection gets a receipt.</span></div></li>
+        <li><span class="w">Week 13</span><div><b>Decide</b><span>You get time to collect, repeat sites, what was recovered and resident feedback. Keep going, scale up or stop.</span></div></li>
+      </ol>
+    </div>
+    <form class="form-card" id="pilot-form" novalidate>
+      <h3>Request a pilot</h3>
+      <label class="fld">Council or organisation<input class="in" required></label>
+      <label class="fld">Your name<input class="in" required></label>
+      <label class="fld">Work email<input class="in" type="email" required placeholder="name@council.vic.gov.au"></label>
+      <label class="fld">Where you'd start <span class="small">(optional)</span><input class="in" placeholder="Suburb, ward or hotspot"></label>
+      <button class="btn lg block" type="submit">Request a pilot</button>
+    </form>
+  </div>
+</section>
+</main>
+<footer class="site-foot"><div class="wrap">
+<div class="foot-grid">
+<div><a class="logo inv" href="index.html" aria-label="no.com.au home">n<span class="o"></span>.<small>com.au</small></a>
+<p style="margin-top:16px;max-width:27em">Report dumped rubbish in under a minute. We get it to the right people, keep the clock running in public, and recycle what gets collected.</p>
+<p class="rg">A Recycle Group initiative</p></div>
+<div><h4>Residents</h4><ul><li><a href="report.html">Report dumping</a></li><li><a href="map.html">Live map</a></li><li><a href="rid.html">Get rid of stuff</a></li><li><a href="index.html#faq">Questions</a></li></ul></div>
+<div><h4>Councils and land managers</h4><ul><li><a href="councils.html">How it works for you</a></li><li><a href="console.html">Demo console</a></li><li><a href="councils.html#pilot">Start a pilot</a></li></ul></div>
+</div>
+<p class="fine">Working prototype. Reports, clocks and figures on this site are samples and no emails are sent. Routing uses ABS council boundaries and OpenStreetMap data. Photos from Unsplash. Map tiles &copy; Esri.</p>
+</div></footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="no.js?v=1791040865"></script>
+<script>
+(function(){
+  var $=NO.$, I=NO.icon, esc=NO.esc;
+  var all=NO.store.all().filter(function(r){return NO.status(r)!=='done';}).sort(function(a,b){return a.created-b.created;}).slice(0,4);
+  $('#inbox').innerHTML=all.map(function(r){var ph=r.photos&&r.photos[0];
+    return '<a class="irow" href="console.html#'+r.id+'" style="text-decoration:none">'+(ph?'<img src="'+NO.img(ph,160,130)+'" alt="">':'<span class="noph">'+I(r.types[0])+'</span>')+
+      '<div><b>'+esc(NO.typeList(r.types))+'</b><small>'+esc(r.suburb)+'<i class="sep" aria-hidden="true"></i>'+esc(r.to)+'</small></div><div class="t">'+NO.chip(r)+'<span class="mono" data-from="'+r.created+'"></span></div></a>';}).join('');
+  NO.bindClocks($('#inbox'));
+  var P=[
+    ['Reports you can act on',['Photo, exact pin, what\'s there, how much and when it turned up','Sent to whoever owns the land: council, state roads, rail or parks','EPA Victoria copied for tyres, building waste, garden waste and hazards','Same pile reported twice? Merged, so you see it once','Arrives as an email. No login, no new system to learn']],
+    ['Collected next working day',['Book a Recycle Group crew from the email, in one tap','7 to 11am windows, with a photo on collection','Crews complete daily safety and compliance checks in eCheck','Anything hazardous goes to licensed specialists, never a general crew','Or use your own crews and keep the clock and receipts']],
+    ['Recycled and reported',['Mattresses go to The Mattress Recycling Company','Steel, timber, e-waste and polystyrene recovered','Good furniture rehomed through charity partners first','A recovery receipt for every collection','Monthly figures by suburb, stream and time to collect, ready for your waste reporting and for Yarta']]
+  ];
+  $('#pillars').innerHTML=P.map(function(p,i){return '<div class="pillar"><div class="n">0'+(i+1)+'</div><h3>'+p[0]+'</h3><ul>'+p[1].map(function(x){return '<li>'+I('check')+'<span>'+x+'</span></li>';}).join('')+'</ul></div>';}).join('');
+  var B=[['Fewer follow-up calls','Residents watch the report move, so they don\'t ring to ask.'],['Your targets, not ours','Set the timeframe for each area. The clock shows progress against it.'],
+    ['Handovers on the record','If it\'s VicTrack\'s or a private owner\'s, pass it on in one tap. Everyone can see who had it and when.'],['Good work gets seen','Every collection ends with a receipt showing what was picked up and where it went.']];
+  $('#clockbul').innerHTML=B.map(function(b){return '<li>'+I('check')+'<div><b>'+b[0]+'</b><span>'+b[1]+'</span></div></li>';}).join('');
+  var t0=new Date(); t0.setDate(t0.getDate()-1);
+  $('#demo-tl').innerHTML=[['r','Reported by a resident','9:14am'],['','Sent to the council','9:14am'],['','Council is on it','10:02am'],['','Collection booked with a Recycle Group crew','10:05am'],['g','Collected','4:56am'],['g','Recycled, receipt issued','4:57am']]
+    .map(function(x){return '<li class="on '+x[0]+'"><i></i><div>'+x[1]+'</div><span>'+x[2]+'</span></li>';}).join('');
+  var PB=[['Hotspots that stand out','Sites reported again and again are flagged, so cameras, lighting and patrols go where they count.'],['Signs that start a report','QR signs at hotspots open the app with the spot already pinned.'],
+    ['Evidence packs','Photos, times, location and any rego, bundled for your local laws team or EPA Victoria.'],['Make the legal way easier','The app points residents to hard waste bookings, drop-offs and pickups. Making common items free to drop off cuts dumping, and we can run free drop-off days with you.']];
+  $('#prevbul').innerHTML=PB.map(function(b){return '<li>'+I('check')+'<div><b>'+b[0]+'</b><span>'+b[1]+'</span></div></li>';}).join('');
+  var PL=[
+    {t:'Reports',p:'Free',d:['Reports by email with photos, pin and details','Routed to whoever owns the land','Duplicates merged','One tap to say you\'re on it, pass it on or mark it collected'],b:'Get reports',f:false},
+    {t:'Console',p:'Annual subscription',d:['Everything in Reports','The console: inbox, map and hotspots','Public clock against your own targets','Resident updates by text or email','Monthly reports and evidence packs','Connects to your request system'],b:'See the console',h:'console.html',f:true},
+    {t:'Collect and recycle',p:'Per collection or a monthly service',d:['Everything in Console','Recycle Group crews, next working day','Recycling, not landfill, with a receipt for every job','Recovery figures for your waste reporting','Free drop-off days at hotspots'],b:'Talk to us',f:false}
+  ];
+  $('#plans').innerHTML=PL.map(function(p){return '<div class="plan'+(p.f?' feat':'')+'"><span class="tag2">'+(p.f?'Most councils start here':'&nbsp;')+'</span><h3>'+p.t+'</h3><div class="pr">'+p.p+'</div><ul>'+p.d.map(function(x){return '<li>'+I('check')+'<span>'+x+'</span></li>';}).join('')+'</ul><a class="btn '+(p.f?'':'ink')+' block" href="'+(p.h||'#pilot')+'">'+p.b+'</a></div>';}).join('');
+  try{ new QRCode($('#qr'),{text:location.href.replace(/councils\.html.*$/,'report.html'),width:232,height:232,colorDark:'#141414',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M}); }catch(e){ $('#qr').innerHTML=I('sign'); }
+  $('#pilot-form').onsubmit=function(e){ e.preventDefault(); if(!this.checkValidity()){this.reportValidity();return;}
+    this.innerHTML='<h3>Thanks.</h3><p class="lede" style="font-size:18px">This is a prototype, so nothing was sent. In the live version this goes straight to the Recycle Group team.</p>'; };
+})();
+</script>
+</body>
+</html>

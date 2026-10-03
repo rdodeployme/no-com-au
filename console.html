@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Console · no.com.au</title>
+<meta name="description" content="The no.com.au console for councils and land managers: inbox, map, hotspots and monthly reports.">
+<meta name="robots" content="noindex"><meta name="theme-color" content="#F4F3EF">
+<meta property="og:title" content="Console · no.com.au">
+<meta property="og:description" content="The no.com.au console for councils and land managers: inbox, map, hotspots and monthly reports.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='11.5' fill='white' stroke='%23D8261C' stroke-width='6'/%3E%3Cpath d='M16 16V9.5' stroke='%23141414' stroke-width='3.2' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;700;800;900&family=Overpass+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css"><link rel="stylesheet" href="no.css?v=1791040865">
+</head>
+<body class="page-console">
+<div class="cn">
+  <aside class="cn-side">
+    <a class="logo inv" href="index.html" aria-label="no.com.au home">n<span class="o"></span>.<small>com.au</small></a>
+    <div class="cn-org"><b>Operations console</b><span>All areas<i class="sep" aria-hidden="true"></i>sample data</span></div>
+    <nav class="cn-nav" id="nav" aria-label="Console">
+      <button type="button" data-v="inbox" aria-pressed="true"><span data-ic="mail"></span>Inbox<em id="n-open"></em></button>
+      <button type="button" data-v="map" aria-pressed="false"><span data-ic="pin"></span>Map</button>
+      <button type="button" data-v="hot" aria-pressed="false"><span data-ic="sign"></span>Hotspots</button>
+      <button type="button" data-v="month" aria-pressed="false"><span data-ic="doc"></span>Monthly report</button>
+    </nav>
+    <div class="cn-foot"><a href="report.html">Make a test report</a><a href="councils.html">About the console</a><button type="button" id="reset">Reset the demo</button></div>
+  </aside>
+
+  <main class="cn-main">
+    <header class="cn-top"><h1 id="v-title">Inbox</h1><div class="kp" id="kp"></div></header>
+
+    <section class="cn-view on" data-view="inbox">
+      <div class="cn-bar">
+        <div class="fseg" id="ifilt"><button type="button" aria-pressed="true" data-f="open">Open</button><button type="button" aria-pressed="false" data-f="late">Overdue</button><button type="button" aria-pressed="false" data-f="done">Collected</button><button type="button" aria-pressed="false" data-f="all">All</button></div>
+        <label class="cn-search"><span data-ic="search"></span><input id="isearch" type="search" placeholder="Search suburb, item or ref" aria-label="Search reports"></label>
+      </div>
+      <div class="itable" id="itable"></div>
+    </section>
+
+    <section class="cn-view" data-view="map"><div class="cmap" id="cmap"></div></section>
+
+    <section class="cn-view" data-view="hot">
+      <p class="lede" style="max-width:44em;margin-bottom:20px">Places reported more than once in the last 30 days. Repeat sites are where signs, lighting, cameras and free drop-off days pay off.</p>
+      <div class="hot-grid"><div id="hlist"></div><div class="cmap hmap" id="hmap"></div></div>
+    </section>
+
+    <section class="cn-view" data-view="month">
+      <div class="month-bar"><p class="lede" style="font-size:17px">Generated from the reports in this console. Ready to drop into a council report.</p><button class="btn ink" type="button" id="print-month"><span data-ic="doc"></span>Save as PDF</button></div>
+      <article class="doc" id="month"></article>
+    </section>
+  </main>
+
+  <aside class="cn-det" id="det" aria-label="Report detail" hidden></aside>
+</div>
+<div class="ev-wrap" id="ev" hidden></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script src="no.js?v=1791040865"></script>
+<script>
+(function(){
+  var $=NO.$, $$=NO.$$, I=NO.icon, esc=NO.esc;
+  var view='inbox', filt='open', q='', sel=null, cmap=null, clayer=null, hmap=null, dmap=null;
+  $$('[data-ic]').forEach(function(s){ s.outerHTML=I(s.dataset.ic); });
+
+  function all(){ return NO.store.all(); }
+  function stats(list){
+    var open=list.filter(function(r){return NO.status(r)!=='done';});
+    var late=open.filter(NO.overdue);
+    var done=list.filter(function(r){return NO.status(r)==='done';});
+    var week=done.filter(function(r){return Date.now()-NO.collectedAt(r)<7*NO.D;});
+    var dur=done.map(function(r){return NO.collectedAt(r)-r.created;});
+    var ontime=done.filter(function(r){return NO.collectedAt(r)<=NO.due(r.created);}).length;
+    var kg=0,rec=0; done.forEach(function(r){ var x=NO.receipt(r.items||NO.defaultItems(r.types)); kg+=x.tot.kg; rec+=x.tot.steel+x.tot.timber; });
+    return {open:open,late:late,done:done,week:week,med:NO.median(dur),rate:done.length?Math.round(ontime/done.length*100):0,kg:kg,rec:rec};
+  }
+  function kpis(){
+    var s=stats(all());
+    $('#n-open').textContent=s.open.length;
+    $('#kp').innerHTML=[[s.open.length,'Open now'],[s.late.length,'Overdue',s.late.length?'bad':''],[s.week.length,'Collected, 7 days'],[s.med?NO.human(s.med).replace(/ \d+m$/,''):'-','Median time to collect'],[s.rate+'%','Collected by the next working day'],[s.rec+' kg','Steel and timber recovered']]
+      .map(function(k){return '<div class="k '+(k[2]||'')+'"><b>'+k[0]+'</b><span>'+k[1]+'</span></div>';}).join('');
+  }
+
+  /* ---------- inbox ---------- */
+  function due(r){
+    if(NO.status(r)==='done') return '<span class="ok">'+I('check')+'In '+NO.human(NO.collectedAt(r)-r.created)+'</span>';
+    var d=NO.due(r.created), left=d-Date.now();
+    return left<0?'<span class="bad">Overdue '+NO.human(-left)+'</span>':'<span>Due '+NO.dayl(d)+', 5pm</span>';
+  }
+  function inbox(){
+    var list=all().filter(function(r){var s=NO.status(r);
+      if(filt==='open'&&s==='done')return false; if(filt==='done'&&s!=='done')return false; if(filt==='late'&&!(s!=='done'&&NO.overdue(r)))return false;
+      if(q){var t=(r.id+' '+r.suburb+' '+NO.typeList(r.types)+' '+r.to).toLowerCase(); if(t.indexOf(q)<0) return false;} return true;});
+    list.sort(function(a,b){ return filt==='done'?NO.collectedAt(b)-NO.collectedAt(a):filt==='all'?b.created-a.created:a.created-b.created; });
+    $('#itable').innerHTML='<div class="ih"><span></span><span>Report</span><span>Responsible</span><span>Status</span><span>Time open</span><span>Target</span></div>'+
+      (list.length?list.map(function(r){var c=NO.collectedAt(r),ph=r.photos&&r.photos[0],conf=r.events.filter(function(e){return e.k==='confirmed';}).reduce(function(a,e){return a+e.n;},0);
+        return '<button type="button" class="ir'+(sel===r.id?' on':'')+(r.sample?'':' mine')+'" data-id="'+r.id+'">'+(ph?'<img src="'+NO.img(ph,140,110)+'" alt="">':'<span class="noph">'+I(r.types[0]||'other')+'</span>')+
+          '<span class="w"><b>'+esc(NO.typeList(r.types))+'</b><small>'+esc(r.suburb)+'<i class="sep" aria-hidden="true"></i>'+esc(r.id)+(conf?'<i class="sep" aria-hidden="true"></i>+'+conf+' seen it':'')+(r.sample?'':'<i class="sep" aria-hidden="true"></i><em>your test report</em>')+'</small></span>'+
+          '<span class="to">'+esc(r.to)+(r.cc&&r.cc.length?'<small>Cc '+esc(r.cc.join(', '))+'</small>':'')+'</span>'+
+          '<span>'+NO.chip(r)+'</span><span class="mono clk'+(c?' done':'')+'" data-from="'+r.created+'"'+(c?' data-until="'+c+'"':'')+'></span><span class="due">'+due(r)+'</span></button>';}).join(''):'<p class="empty">Nothing here.</p>');
+    NO.bindClocks($('#itable'));
+  }
+  $('#itable').onclick=function(e){var b=e.target.closest('.ir');if(b)open(b.dataset.id);};
+  $('#ifilt').onclick=function(e){var b=e.target.closest('button');if(!b)return;$$('#ifilt button').forEach(function(x){x.setAttribute('aria-pressed','false');});b.setAttribute('aria-pressed','true');filt=b.dataset.f;inbox();};
+  $('#isearch').oninput=function(){q=this.value.trim().toLowerCase();inbox();};
+
+  /* ---------- detail ---------- */
+  function open(id){ sel=id; detail(); $$('.ir').forEach(function(x){x.classList.toggle('on',x.dataset.id===id);}); if(history.replaceState) history.replaceState(null,'','#'+id); }
+  function close(){ sel=null; $('#det').hidden=true; document.body.classList.remove('det-open'); $$('.ir.on').forEach(function(x){x.classList.remove('on');}); if(history.replaceState) history.replaceState(null,'',location.pathname); }
+  function detail(){
+    var r=sel&&NO.store.get(sel), d=$('#det'); if(!r){ d.hidden=true; return; }
+    d.hidden=false; document.body.classList.add('det-open');
+    var s=NO.status(r), c=NO.collectedAt(r);
+    var tl=r.events.slice().sort(function(a,b){return a.t-b.t;}).map(function(e){var cls=e.k==='reported'?'r':(e.k==='collected'||e.k==='receipt')?'g':'';return '<li class="on '+cls+'"><i></i><div>'+esc(NO.eventText(e,r))+'</div><span>'+NO.time(e.t)+'<br>'+NO.day(e.t)+'</span></li>';}).join('');
+    var facts=[['Reported',esc(NO.when(r.created))],['Where',esc([r.place,r.suburb].filter(Boolean).join(', '))+'<br><span class="small mono">'+r.lat.toFixed(5)+', '+r.lon.toFixed(5)+'</span>'],['Responsible',esc(r.to)+'<br><span class="small">'+esc(r.why||'')+'</span>'],
+      ['What',esc(NO.typeList(r.types))],['How much',esc(r.size?NO.S[r.size].label:'Not given')],['Blocking',r.blocking?'<b>Yes</b>':'No'],['Turned up',esc(r.seen||'Not sure')]];
+    if(r.cc&&r.cc.length) facts.splice(3,0,['Copied to',esc(r.cc.join(', '))]);
+    if(r.notes) facts.push(['Notes',esc(r.notes)]);
+    if(r.rego) facts.push(['Vehicle rego','<b class="mono">'+esc(r.rego)+'</b>']);
+    d.innerHTML='<div class="dt-top"><div>'+NO.chip(r)+'<h2>'+esc(NO.typeList(r.types))+'</h2><p class="small">'+esc(r.id)+'<i class="sep" aria-hidden="true"></i>'+esc(r.suburb)+'</p></div><button class="ib" type="button" id="dclose" aria-label="Close">'+I('close')+'</button></div>'+
+      '<div class="dt-clock'+(s==='done'?' done':'')+'"><span>'+(s==='done'?'Collected in':'Open for')+'</span><b class="mono" data-from="'+r.created+'"'+(c?' data-until="'+c+'"':'')+'></b><small>'+due(r)+'</small></div>'+
+      '<div class="dt-media">'+((r.photos&&r.photos[0])?'<img src="'+NO.img(r.photos[0],700,520)+'" alt="'+esc(r.alt||'')+'">':'<div class="noph">'+I('camera')+'<span>No photo</span></div>')+'<div class="dt-map" id="dmap"></div></div>'+
+      '<div class="dt-actions" id="dact">'+
+        '<button class="btn ink" type="button" data-a="ack"'+(s!=='open'?' disabled':'')+'>'+I('check')+'We\'re on it</button>'+
+        '<button class="btn ink" type="button" data-a="book"'+(s==='sched'||s==='done'?' disabled':'')+'>'+I('crew')+'Book a crew</button>'+
+        '<button class="btn ghost" type="button" data-a="pass"'+(s==='done'?' disabled':'')+'>'+I('pass')+'Not ours</button>'+
+        '<button class="btn green" type="button" data-a="done"'+(s==='done'?' disabled':'')+'>'+I('recycle')+'Collected</button>'+
+        '<button class="btn ghost wide" type="button" data-a="ev">'+I('doc')+'Evidence pack</button>'+
+      '</div><div class="opts" id="dopts" hidden></div>'+
+      '<dl class="dt-facts">'+facts.map(function(f){return '<dt>'+f[0]+'</dt><dd>'+f[1]+'</dd>';}).join('')+'</dl>'+
+      '<h3 class="dt-h">Timeline</h3><ol class="tl">'+tl+'</ol>'+
+      (s==='done'?'<h3 class="dt-h">Recovery receipt</h3>'+NO.receiptHTML(r,{cls:'on-white'}):'')+
+      '<a class="link" href="r.html#'+r.id+'" target="_blank" rel="noopener">Open the public page</a>';
+    NO.bindClocks(d);
+    if(dmap){ dmap.remove(); dmap=null; }
+    if(window.L){ dmap=L.map('dmap',{zoomControl:false,attributionControl:false,scrollWheelZoom:false}).setView([r.lat,r.lon],16); NO.tiles(dmap,true,'street'); NO.marker(r).addTo(dmap); }
+    $('#dclose').onclick=close;
+  }
+  function opts(h){ var o=$('#dopts'); if(!o) return; o.innerHTML=h; o.hidden=!h; }
+  function save(r){ NO.store.save(r); NO.buzz(); }
+  $('#det').addEventListener('click',function(e){
+    var r=sel&&NO.store.get(sel); if(!r) return;
+    var a=e.target.closest('[data-a]'), b=e.target.closest('[data-book]'), p=e.target.closest('[data-pass]'), q2=e.target.closest('[data-q]');
+    if(a){
+      var k=a.dataset.a;
+      if(k==='ack'){ NO.addEvent(r,'ack',{by:r.to}); save(r); }
+      if(k==='book') opts('<p class="label">Who\'s collecting?</p><button class="opt" type="button" data-book="Recycle Group crew"><span><b>Recycle Group crew</b><small>Next working day, 7 to 11am. Recycled, with a receipt.</small></span>'+I('right')+'</button><button class="opt" type="button" data-book="Council crew"><span><b>Our own crew</b><small>The clock and receipt still work.</small></span>'+I('right')+'</button>');
+      if(k==='pass'){
+        var list=r.state==='QLD'?['Department of Transport and Main Roads','Queensland Rail','Queensland Parks and Wildlife Service','Private landowner']:['Department of Transport and Planning','VicTrack','Parks Victoria','Melbourne Water','Private landowner'];
+        var cn=NO.councilName(r.lga); if(cn&&cn!==r.to) list.unshift(cn);
+        opts('<p class="label">Whose land is it?</p>'+list.filter(function(x){return x!==r.to;}).map(function(x){return '<button class="opt" type="button" data-pass="'+esc(x)+'"><span><b>'+esc(x)+'</b></span>'+I('right')+'</button>';}).join('')+'<p class="small">The clock keeps running through the handover.</p>');
+      }
+      if(k==='done'){
+        var items=r.items||NO.defaultItems(r.types); r._items=items;
+        opts('<p class="label">What did the crew pick up?</p>'+items.map(function(it,i){var sl='';
+          if(it.t==='mattress') sl='<select data-size="'+i+'"><option value="single">Single</option><option value="queen"'+(it.size==='queen'?' selected':'')+'>Double or queen</option><option value="king">King</option></select>';
+          if(it.t==='couch') sl='<select data-size="'+i+'"><option value="1">1 seater</option><option value="2">2 seater</option><option value="3"'+(it.size==='3'?' selected':'')+'>3 seater</option></select>';
+          return '<div class="qrow"><span>'+I(it.t)+'<b>'+esc(NO.T[it.t].label)+'</b>'+sl+'</span><span class="qty"><button type="button" data-q="'+i+'" data-d="-1" aria-label="Fewer">'+I('minus')+'</button><b data-qv="'+i+'">'+it.qty+'</b><button type="button" data-q="'+i+'" data-d="1" aria-label="More">'+I('plus')+'</button></span></div>';}).join('')+
+          '<button class="btn green block" type="button" data-confirm="1">'+I('check')+'Mark collected and issue receipt</button>');
+        $('#dopts').dataset.items=JSON.stringify(items);
+      }
+      if(k==='ev') evidence(r);
+      return;
+    }
+    if(q2){ var o=$('#dopts'), its=JSON.parse(o.dataset.items), i=+q2.dataset.q; its[i].qty=Math.max(1,Math.min(20,its[i].qty+ +q2.dataset.d)); o.dataset.items=JSON.stringify(its); $('[data-qv="'+i+'"]',o).textContent=its[i].qty; return; }
+    if(e.target.closest('[data-confirm]')){
+      var o2=$('#dopts'), its2=JSON.parse(o2.dataset.items);
+      $$('select[data-size]',o2).forEach(function(s){ its2[+s.dataset.size].size=s.value; });
+      var crew=(r.events.filter(function(x){return x.k==='scheduled';}).pop()||{}).crew||'Council crew';
+      r.items=its2; NO.addEvent(r,'collected',{by:crew}); r.events.push({k:'receipt',t:Date.now()+1000}); save(r); return;
+    }
+    if(b){ if(NO.status(r)==='open') NO.addEvent(r,'ack',{by:r.to}); NO.addEvent(r,'scheduled',{at:NO.window(r.created),crew:b.dataset.book}); save(r); return; }
+    if(p){ var to=p.dataset.pass; NO.addEvent(r,'passed',{to:to,by:r.to}); r.why='Passed on by '+r.to; r.to=to; save(r); return; }
+  });
+
+  /* evidence pack */
+  function evidence(r){
+    var ev=$('#ev');
+    ev.innerHTML='<div class="ev"><div class="ev-bar no-print"><b>Evidence pack</b><div><button class="btn sm ink" type="button" id="ev-print">Save as PDF</button> <button class="btn sm ghost" type="button" id="ev-epa">Send to EPA Victoria</button> <button class="ib" type="button" id="ev-close" aria-label="Close">'+I('close')+'</button></div></div>'+
+      '<div class="ev-doc"><div class="ev-head"><span class="logo">n<span class="o"></span>.<small>com.au</small></span><div><b>Evidence pack '+esc(r.id)+'</b><br><span class="small">Generated '+esc(NO.when(Date.now()))+'</span></div></div>'+
+      '<div class="ev-photos">'+((r.photos||[]).length?r.photos.map(function(p){return '<img src="'+NO.img(p,900,700)+'" alt="">';}).join(''):'<p class="small">No photos supplied.</p>')+'</div>'+
+      '<dl class="ev-dl"><dt>Reported</dt><dd>'+esc(new Date(r.created).toLocaleString('en-AU'))+'</dd><dt>Location</dt><dd>'+esc([r.place,r.suburb].filter(Boolean).join(', '))+'<br>'+r.lat.toFixed(6)+', '+r.lon.toFixed(6)+'</dd>'+
+      '<dt>Responsible</dt><dd>'+esc(r.to)+' ('+esc((r.why||'').toLowerCase())+')</dd><dt>What</dt><dd>'+esc(NO.typeList(r.types))+'</dd><dt>How much</dt><dd>'+esc(r.size?NO.S[r.size].label:'Not given')+'</dd><dt>Turned up</dt><dd>'+esc(r.seen||'Not sure')+'</dd>'+
+      '<dt>Vehicle rego</dt><dd>'+(r.rego?esc(r.rego):'None given')+'</dd><dt>Other reports</dt><dd>'+r.events.filter(function(e){return e.k==='confirmed';}).reduce(function(a,e){return a+e.n;},0)+' more people reported the same pile</dd>'+
+      '<dt>Reporter</dt><dd>Contact details are held by no.com.au and released to authorised officers on request.</dd></dl>'+
+      '<h3>Timeline</h3><ol class="tl">'+r.events.slice().sort(function(a,b){return a.t-b.t;}).map(function(e){return '<li class="on"><i></i><div>'+esc(NO.eventText(e,r))+'</div><span>'+esc(new Date(e.t).toLocaleString('en-AU',{day:'numeric',month:'short',hour:'numeric',minute:'2-digit'}))+'</span></li>';}).join('')+'</ol></div></div>';
+    ev.hidden=false; document.body.classList.add('ev-on');
+    $('#ev-close').onclick=function(){ ev.hidden=true; document.body.classList.remove('ev-on'); };
+    $('#ev-print').onclick=function(){ window.print(); };
+    $('#ev-epa').onclick=function(){ var rr=NO.store.get(r.id); NO.addEvent(rr,'evidence',{to:'EPA Victoria'}); NO.store.save(rr); NO.toast('Evidence pack sent to EPA Victoria (prototype: nothing is sent)'); };
+  }
+
+  /* ---------- map ---------- */
+  function mapView(){
+    if(!window.L) return;
+    if(!cmap){ cmap=L.map('cmap').setView([-37.85,144.8],9); NO.tiles(cmap,true); }
+    setTimeout(function(){cmap.invalidateSize();},50);
+    if(clayer) clayer.remove(); clayer=L.layerGroup().addTo(cmap);
+    all().forEach(function(r){ NO.marker(r).addTo(clayer).bindPopup('<b>'+esc(NO.typeList(r.types))+'</b><br>'+esc(r.suburb)+'<i class="sep" aria-hidden="true"></i>'+esc(r.to)+'<br><a href="#" data-open="'+r.id+'">Open in the console</a>'); });
+  }
+  document.addEventListener('click',function(e){ var a=e.target.closest('[data-open]'); if(!a) return; e.preventDefault(); setView('inbox'); open(a.dataset.open); });
+
+  /* ---------- hotspots ---------- */
+  function hot(){
+    var h=NO.history(), list=h.spots.map(function(s){
+      var pts=h.points.filter(function(p){return NO.dist(s.lat,s.lon,p.lat,p.lon)<250;});
+      var live=all().filter(function(r){return NO.dist(s.lat,s.lon,r.lat,r.lon)<250&&Date.now()-r.created<30*NO.D;});
+      var n=pts.length+live.length, last=Math.min.apply(null,pts.map(function(p){return p.daysAgo;}).concat(live.length?[0]:[99]));
+      var types={}; pts.forEach(function(p){types[p.t]=(types[p.t]||0)+1;}); live.forEach(function(r){r.types.forEach(function(t){types[t]=(types[t]||0)+1;});});
+      var top=Object.keys(types).sort(function(a,b){return types[b]-types[a];}).slice(0,3).map(function(t){return NO.T[t].label.toLowerCase();});
+      var act=n>=7?'Camera, lighting and a free drop-off day':n>=5?'QR sign and patrols':'QR sign';
+      return {s:s,n:n,last:last,top:top,act:act};
+    }).sort(function(a,b){return b.n-a.n;});
+    $('#hlist').innerHTML=list.map(function(x,i){return '<div class="hs"><div class="hs-n">'+x.n+'<small>reports</small></div><div><b>'+esc(x.s.name)+'</b><p>Mostly '+esc(x.top.join(', '))+'. Last report '+(x.last===0?'today':x.last+' days ago')+'.</p><p class="hs-act">'+I('sign')+'Suggested: '+esc(x.act)+'</p></div><button class="btn sm ink" type="button" data-sign="'+i+'">Order signs</button></div>';}).join('');
+    $('#hlist').onclick=function(e){ if(e.target.closest('[data-sign]')) NO.toast('Sign order started (prototype)'); };
+    if(!window.L) return;
+    if(!hmap){ hmap=L.map('hmap',{scrollWheelZoom:false}).setView([-37.8,144.85],10); NO.tiles(hmap,true);
+      h.points.forEach(function(p){ L.circleMarker([p.lat,p.lon],{radius:4,color:'#141414',weight:0,fillOpacity:.35}).addTo(hmap); });
+      list.forEach(function(x){ L.circle([x.s.lat,x.s.lon],{radius:120+x.n*55,color:'#D8261C',weight:2,fillColor:'#D8261C',fillOpacity:.18}).addTo(hmap).bindPopup('<b>'+esc(x.s.name)+'</b><br>'+x.n+' reports in 30 days'); });
+    }
+    setTimeout(function(){hmap.invalidateSize();},50);
+  }
+
+  /* ---------- monthly report ---------- */
+  function month(){
+    var list=all().filter(function(r){return Date.now()-r.created<30*NO.D;}), s=stats(list);
+    var by={}; list.forEach(function(r){r.types.forEach(function(t){by[t]=(by[t]||0)+1;});});
+    var rows=Object.keys(by).sort(function(a,b){return by[b]-by[a];}).map(function(t){return '<tr><td>'+esc(NO.T[t].label)+'</td><td>'+by[t]+'</td><td>'+esc((NO.FATE[t]||{}).how||'')+'</td><td>'+esc((NO.FATE[t]||{}).where||'')+'</td></tr>';}).join('');
+    var own={}; list.forEach(function(r){own[r.to]=(own[r.to]||0)+1;});
+    var ownRows=Object.keys(own).sort(function(a,b){return own[b]-own[a];}).map(function(k){return '<tr><td>'+esc(k)+'</td><td>'+own[k]+'</td></tr>';}).join('');
+    var now=new Date();
+    $('#month').innerHTML='<header class="doc-head"><span class="logo">n<span class="o"></span>.<small>com.au</small></span><div><b>Monthly report</b><br>'+esc(now.toLocaleDateString('en-AU',{month:'long',year:'numeric'}))+'<i class="sep" aria-hidden="true"></i>last 30 days<i class="sep" aria-hidden="true"></i>sample data</div></header>'+
+      '<div class="doc-kpis"><div><b>'+list.length+'</b><span>Reports received</span></div><div><b>'+s.done.length+'</b><span>Collected</span></div><div><b>'+(s.med?NO.human(s.med):'-')+'</b><span>Median time to collect</span></div><div><b>'+s.rate+'%</b><span>Collected by the next working day</span></div></div>'+
+      '<h3>What was reported</h3><table><thead><tr><th>Item</th><th>Reports</th><th>What happens to it</th><th>Where it goes</th></tr></thead><tbody>'+rows+'</tbody></table>'+
+      '<h3>Who it went to</h3><table><thead><tr><th>Responsible</th><th>Reports</th></tr></thead><tbody>'+ownRows+'</tbody></table>'+
+      '<h3>Recovery</h3><p>Weighed items collected: <b>'+s.kg+' kg</b>. Steel and timber recovered from them: <b>'+s.rec+' kg</b>. Weights use The Mattress Recycling Company\'s per-item figures for mattresses and couches. Other streams are counted, not weighed, in this prototype.</p>'+
+      '<h3>Repeat sites</h3><p>See the Hotspots tab for sites reported more than once, with suggested actions.</p>'+
+      '<p class="small" style="margin-top:28px">Prototype report built from sample data. In the live version, figures come from crew weighbridge dockets and recovery records, and can feed Yarta for your environmental reporting.</p>';
+  }
+  $('#print-month').onclick=function(){ document.body.classList.add('print-month'); window.print(); setTimeout(function(){document.body.classList.remove('print-month');},500); };
+
+  /* ---------- views ---------- */
+  var titles={inbox:'Inbox',map:'Map',hot:'Hotspots',month:'Monthly report'};
+  function setView(v){
+    view=v; $('#v-title').textContent=titles[v];
+    $$('#nav button').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.v===v);});
+    $$('.cn-view').forEach(function(s){s.classList.toggle('on',s.dataset.view===v);});
+    if(v==='inbox') inbox(); if(v==='map') mapView(); if(v==='hot') hot(); if(v==='month') month();
+  }
+  $('#nav').onclick=function(e){var b=e.target.closest('button');if(b)setView(b.dataset.v);};
+  $('#reset').onclick=function(){ NO.store.reset(); location.href='console.html'; };
+  function refresh(){ kpis(); if(view==='inbox') inbox(); if(view==='map') mapView(); if(view==='month') month(); if(sel) detail(); }
+  NO.onChange(refresh);
+  kpis(); setView('inbox');
+  window.NOCONSOLE={view:setView,open:open,close:close,act:function(a){ var b=$('#det [data-a="'+a+'"]'); if(b&&!b.disabled) b.click(); }};
+  var h=(location.hash||'').slice(1); if(h&&NO.store.get(h)) open(h);
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape'){ if(!$('#ev').hidden){ $('#ev').hidden=true; document.body.classList.remove('ev-on'); } else close(); } });
+})();
+</script>
+</body>
+</html>

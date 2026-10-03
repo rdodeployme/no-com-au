@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Live map · no.com.au</title>
+<meta name="description" content="Every dumped rubbish report, on the clock until it's collected.">
+<meta name="theme-color" content="#F4F3EF">
+<meta property="og:title" content="Live map · no.com.au">
+<meta property="og:description" content="Every dumped rubbish report, on the clock until it's collected.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='11.5' fill='white' stroke='%23D8261C' stroke-width='6'/%3E%3Cpath d='M16 16V9.5' stroke='%23141414' stroke-width='3.2' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;700;800;900&family=Overpass+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css"><link rel="stylesheet" href="no.css?v=1791040865">
+</head>
+<body class="page-map">
+<header class="site-head"><div class="wrap bar">
+<a class="logo" href="index.html" aria-label="no.com.au home">n<span class="o"></span>.<small>com.au</small></a>
+<nav aria-label="Main"><a href="index.html#how">How it works</a><a href="map.html" aria-current="page">Live map</a><a href="rid.html">Get rid of stuff</a><a href="councils.html">For councils</a></nav>
+<a class="btn sm" href="report.html">Report dumping</a>
+<button class="menu-btn" type="button" data-menu aria-label="Menu" aria-expanded="false"><svg class="ic" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M5 9h22M5 16h22M5 23h22"/></svg></button>
+</div></header>
+<main class="mp">
+  <div class="mp-side">
+    <h1>Live map</h1>
+    <p class="lede">Every report counts up until it's collected.</p>
+    <p class="note-sample">Sample reports</p>
+    <div class="kpis3" id="kpis"></div>
+    <div class="fseg" id="filt"><button type="button" aria-pressed="true" data-f="open">Open</button><button type="button" aria-pressed="false" data-f="done">Collected</button><button type="button" aria-pressed="false" data-f="all">All</button></div>
+    <div class="rlist" id="list"></div>
+    <a class="btn block" href="report.html" style="margin-top:16px" id="cta"></a>
+  </div>
+  <div class="mp-map" id="map" aria-label="Map of reports">
+    <div class="mp-legend"><span><i></i>Waiting</span><span><i class="k"></i>On it or booked</span><span><i class="g"></i>Collected</span></div>
+  </div>
+</main>
+<footer class="site-foot"><div class="wrap">
+<div class="foot-grid">
+<div><a class="logo inv" href="index.html" aria-label="no.com.au home">n<span class="o"></span>.<small>com.au</small></a>
+<p style="margin-top:16px;max-width:27em">Report dumped rubbish in under a minute. We get it to the right people, keep the clock running in public, and recycle what gets collected.</p>
+<p class="rg">A Recycle Group initiative</p></div>
+<div><h4>Residents</h4><ul><li><a href="report.html">Report dumping</a></li><li><a href="map.html">Live map</a></li><li><a href="rid.html">Get rid of stuff</a></li><li><a href="index.html#faq">Questions</a></li></ul></div>
+<div><h4>Councils and land managers</h4><ul><li><a href="councils.html">How it works for you</a></li><li><a href="console.html">Demo console</a></li><li><a href="councils.html#pilot">Start a pilot</a></li></ul></div>
+</div>
+<p class="fine">Working prototype. Reports, clocks and figures on this site are samples and no emails are sent. Routing uses ABS council boundaries and OpenStreetMap data. Photos from Unsplash. Map tiles &copy; Esri.</p>
+</div></footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script src="no.js?v=1791040865"></script>
+<script>
+(function(){
+  var $=NO.$, $$=NO.$$, I=NO.icon, esc=NO.esc, filter='open', map=null, layer=null, marks={};
+  $('#cta').innerHTML=I('camera')+'Report dumping';
+  function kpis(all){
+    var open=all.filter(function(r){return NO.status(r)!=='done';}).length;
+    var week=all.filter(function(r){var c=NO.collectedAt(r);return c&&Date.now()-c<7*NO.D;});
+    var med=NO.median(week.map(function(r){return NO.collectedAt(r)-r.created;}));
+    $('#kpis').innerHTML='<div class="kpi"><b>'+open+'</b><span>Open now</span></div><div class="kpi"><b>'+week.length+'</b><span>Collected in the last 7 days</span></div><div class="kpi"><b>'+(med?NO.human(med).replace(/ \d+m$/,''):'-')+'</b><span>Median time to collect</span></div>';
+  }
+  function item(r){
+    var c=NO.collectedAt(r), ph=r.photos&&r.photos[0];
+    return '<a class="ritem" data-id="'+r.id+'" href="r.html#'+r.id+'">'+(ph?'<img class="th" src="'+NO.img(ph,200,170)+'" alt="'+esc(r.alt||'')+'" loading="lazy">':'<span class="th noph">'+I(r.types[0]||'other')+'</span>')+
+      '<div><h4>'+esc(NO.typeList(r.types))+'</h4><p>'+esc(r.suburb)+'<i class="sep" aria-hidden="true"></i>'+esc(r.to)+'</p></div>'+
+      '<div class="rt">'+NO.chip(r)+'<div class="rc '+(c?'done':'run')+'" data-from="'+r.created+'"'+(c?' data-until="'+c+'"':'')+'></div></div></a>';
+  }
+  function render(){
+    var all=NO.store.all(); kpis(all);
+    var list=all.filter(function(r){var d=NO.status(r)==='done';return filter==='all'||(filter==='done'?d:!d);});
+    list.sort(function(a,b){ return filter==='done' ? NO.collectedAt(b)-NO.collectedAt(a) : a.created-b.created; });
+    $('#list').innerHTML=list.length?list.map(item).join(''):'<p class="small">Nothing here right now.</p>';
+    NO.bindClocks($('#list'));
+    if(!window.L) return;
+    if(!map){ map=L.map('map',{zoomControl:true}).setView([-37.85,144.8],9); NO.tiles(map,true); map.on('popupclose',function(){$$('.ritem.hl').forEach(function(x){x.classList.remove('hl');});}); }
+    if(layer) layer.remove(); layer=L.layerGroup().addTo(map); marks={};
+    list.forEach(function(r){
+      var m=NO.marker(r).addTo(layer);
+      m.bindPopup('<b>'+esc(NO.typeList(r.types))+'</b><br>'+esc(r.suburb)+'<br>'+esc(r.to)+'<br><a href="r.html#'+r.id+'">Open report</a>');
+      m.on('click',function(){ $$('.ritem.hl').forEach(function(x){x.classList.remove('hl');}); var it=$('.ritem[data-id="'+r.id+'"]'); if(it){it.classList.add('hl');it.scrollIntoView({block:'nearest',behavior:'smooth'});} });
+      marks[r.id]=m;
+    });
+  }
+  $('#filt').onclick=function(e){var b=e.target.closest('button');if(!b)return;$$('#filt button').forEach(function(x){x.setAttribute('aria-pressed','false');});b.setAttribute('aria-pressed','true');filter=b.dataset.f;render();};
+  $('#list').addEventListener('mouseover',function(e){var a=e.target.closest('.ritem');if(!a||!marks[a.dataset.id]||!map)return;var m=marks[a.dataset.id];if(map.getBounds().contains(m.getLatLng()))m.openPopup();});
+  render(); NO.onChange(render);
+})();
+</script>
+</body>
+</html>

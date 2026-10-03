@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Get rid of stuff · no.com.au</title>
+<meta name="description" content="Don't dump it. Tap what you've got and see the quickest legal ways to get rid of it.">
+<meta name="theme-color" content="#F4F3EF">
+<meta property="og:title" content="Get rid of stuff · no.com.au">
+<meta property="og:description" content="Don't dump it. Tap what you've got and see the quickest legal ways to get rid of it.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='11.5' fill='white' stroke='%23D8261C' stroke-width='6'/%3E%3Cpath d='M16 16V9.5' stroke='%23141414' stroke-width='3.2' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;700;800;900&family=Overpass+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="no.css?v=1791040865">
+</head>
+<body class="page-rid">
+<header class="site-head"><div class="wrap bar">
+<a class="logo" href="index.html" aria-label="no.com.au home">n<span class="o"></span>.<small>com.au</small></a>
+<nav aria-label="Main"><a href="index.html#how">How it works</a><a href="map.html">Live map</a><a href="rid.html" aria-current="page">Get rid of stuff</a><a href="councils.html">For councils</a></nav>
+<a class="btn sm" href="report.html">Report dumping</a>
+<button class="menu-btn" type="button" data-menu aria-label="Menu" aria-expanded="false"><svg class="ic" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M5 9h22M5 16h22M5 23h22"/></svg></button>
+</div></header>
+<main class="sec tight"><div class="wrap">
+  <h1 class="h-xl" style="font-size:clamp(50px,7vw,104px)">Don't dump it.<br><span class="red">Here's the easy way.</span></h1>
+  <p class="lede" style="margin-top:22px">Tap what you've got. We'll show you the quickest legal ways to move it, best option first.</p>
+  <div class="tiles rid-tiles" id="tiles"></div>
+  <div id="ways-wrap" hidden>
+    <div class="ways-head"><h2 id="ways-title"></h2><p class="small">Options can vary by council and suburb.</p></div>
+    <div class="ways" id="ways"></div>
+  </div>
+</div></main>
+<footer class="site-foot"><div class="wrap">
+<div class="foot-grid">
+<div><a class="logo inv" href="index.html" aria-label="no.com.au home">n<span class="o"></span>.<small>com.au</small></a>
+<p style="margin-top:16px;max-width:27em">Report dumped rubbish in under a minute. We get it to the right people, keep the clock running in public, and recycle what gets collected.</p>
+<p class="rg">A Recycle Group initiative</p></div>
+<div><h4>Residents</h4><ul><li><a href="report.html">Report dumping</a></li><li><a href="map.html">Live map</a></li><li><a href="rid.html">Get rid of stuff</a></li><li><a href="index.html#faq">Questions</a></li></ul></div>
+<div><h4>Councils and land managers</h4><ul><li><a href="councils.html">How it works for you</a></li><li><a href="console.html">Demo console</a></li><li><a href="councils.html#pilot">Start a pilot</a></li></ul></div>
+</div>
+<p class="fine">Working prototype. Reports, clocks and figures on this site are samples and no emails are sent. Routing uses ABS council boundaries and OpenStreetMap data. Photos from Unsplash. Map tiles &copy; Esri.</p>
+</div></footer>
+<script src="no.js?v=1791040865"></script>
+<script>
+(function(){
+  var $=NO.$, $$=NO.$$, I=NO.icon, esc=NO.esc;
+  var W={
+    hw:{t:'Book your council\'s hard waste collection',d:'Most councils run booked or scheduled hard waste collections. Check what yours offers before you pay for anything.'},
+    drop:{t:'Drop it at a transfer station or resource recovery centre',d:'They take most household items and sort them for recycling. Some things are free to drop off, so check before you go.'},
+    trash:{t:'Book a pickup online',d:'Too big, too heavy or too awkward to move yourself? Trash.com.au collects bulky items at a fixed price.',a:'https://trash.com.au',l:'trash.com.au'},
+    junk:{t:'Get a crew to clear it',d:'For a bigger clean-out, JUNK sends a team that does all the lifting and recycles what it can.',a:'https://junk.com.au',l:'Book a Quote'},
+    give:{t:'Give it away',d:'If it still works or is in good shape, someone nearby will probably take it.',a:'https://freecycle.com.au',l:'freecycle.com.au'},
+    mattressR:{t:'Make sure it gets recycled',d:'Nearly every part of a mattress can be recycled: the steel, the foam and the fabric. Ask for mattress recycling when you book a pickup or drop it off.'},
+    ewaste:{t:'Take it to an e-waste drop-off',d:'In Victoria, e-waste can\'t go to landfill, so it can\'t go in your bin. Councils and some retailers run drop-off points.'},
+    tyres:{t:'Leave old tyres at the tyre shop',d:'Tyre shops usually take your old tyres when you buy new ones. For a stack of them, use a licensed tyre recycler.'},
+    rubble:{t:'Get a skip or a crew',d:'Building and renovation waste usually can\'t go out with hard waste. Hire a skip or book a crew that handles it.'},
+    green:{t:'Green bin, drop-off or a backyard clean-up',d:'Small loads go in your green bin. Bigger piles can be dropped off, or a crew can clear the lot.'},
+    poly:{t:'Recycle the polystyrene',d:'Polystyrene can be recycled, just not in your home bin. Styro takes it and turns it into new products.',a:'https://styro.com.au',l:'styro.com.au'},
+    box:{t:'Flatten it and recycle it',d:'Flattened cardboard goes in your recycling bin. A mountain of it can be dropped off or picked up.'},
+    car:{t:'Call a licensed auto recycler',d:'They take whole cars and parts, and many will come to you.'},
+    bank:{t:'Get credit for your old whitegood',d:'Recycle Bank will give you credit when you drop off a whitegood, to spend at participating retailers.',soon:true},
+    bags:{t:'Spread it over a few bin nights',d:'A few extra bags? Put them out over a couple of weeks. Slower, but it costs nothing extra.'},
+    haz:{t:'Don\'t put it in a pickup, a skip or a bin',d:'Asbestos needs a licensed removalist. Household chemicals and paint go to a chemical drop-off. Your council can tell you where.',warn:true},
+    hazEpa:{t:'Found some dumped?',d:'Report it here, or call EPA Victoria\'s 24-hour pollution hotline on 1300 372 842.',a:'report.html',l:'Report dumping',self:true}
+  };
+  var BY={mattress:['trash','mattressR','hw','drop'],couch:['give','trash','hw','drop'],bags:['bags','junk','drop'],whitegoods:['give','trash','bank','drop'],
+    ewaste:['ewaste','give','trash'],tyres:['tyres','drop'],rubble:['rubble','junk','drop'],green:['green','junk','drop'],boxes:['box','poly','drop'],
+    car:['car'],other:['trash','junk','hw','drop'],hazard:['haz','hazEpa']};
+  $('#tiles').innerHTML=NO.TYPES.map(function(t){return '<button type="button" class="tile'+(t.hazard?' hz':'')+'" aria-pressed="false" data-t="'+t.id+'">'+I(t.id)+'<span>'+t.label+'</span></button>';}).join('');
+  function pick(id,scroll){
+    if(!BY[id]) return;
+    $$('#tiles .tile').forEach(function(x){x.setAttribute('aria-pressed',x.dataset.t===id);});
+    $('#ways-wrap').hidden=false;
+    $('#ways-title').textContent=id==='hazard'?'Asbestos or chemicals':'Getting rid of: '+NO.T[id].label.toLowerCase();
+    $('#ways').innerHTML=BY[id].map(function(k,i){var w=W[k];
+      return '<div class="way'+(w.warn?' warn':'')+'" style="animation-delay:'+(i*0.06)+'s"><div class="num">'+(i+1)+'</div><div><h3>'+esc(w.t)+(w.soon?' <span class="st st-ack soon">Coming soon</span>':'')+'</h3><p>'+esc(w.d)+'</p></div>'+
+        (w.a?'<a class="btn '+(w.self?'':'ink')+'" href="'+w.a+'"'+(w.self?'':' target="_blank" rel="noopener"')+'>'+esc(w.l)+'</a>':'<span></span>')+'</div>';}).join('');
+    if(history.replaceState) history.replaceState(null,'','#'+id);
+    if(scroll) $('#ways-wrap').scrollIntoView({behavior:'smooth',block:'start'});
+  }
+  $('#tiles').onclick=function(e){var b=e.target.closest('.tile');if(b){NO.buzz();pick(b.dataset.t,true);}};
+  var h=(location.hash||'').slice(1); pick(BY[h]?h:'mattress',false);
+})();
+</script>
+</body>
+</html>

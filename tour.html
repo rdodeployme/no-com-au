@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Richard's version · no.com.au</title>
+<meta name="description" content="The whole of no.com.au in about 90 seconds.">
+<meta name="robots" content="noindex"><meta name="theme-color" content="#F4F3EF">
+<meta property="og:title" content="Richard's version · no.com.au">
+<meta property="og:description" content="The whole of no.com.au in about 90 seconds.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='11.5' fill='white' stroke='%23D8261C' stroke-width='6'/%3E%3Cpath d='M16 16V9.5' stroke='%23141414' stroke-width='3.2' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;700;800;900&family=Overpass+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="no.css?v=1791040865">
+</head>
+<body class="page-tour">
+<div class="tour">
+  <header class="t-top">
+    <div class="t-row">
+      <a class="logo inv" href="index.html" aria-label="no.com.au home">n<span class="o"></span>.</a>
+      <b class="t-title">Richard's version <span>the whole thing in 90 seconds</span></b>
+      <div class="t-ctl">
+        <button type="button" id="t-pause" aria-label="Pause">Pause</button>
+        <button type="button" id="t-next" aria-label="Next">Next</button>
+        <a href="index.html" id="t-exit" aria-label="Exit">Exit</a>
+      </div>
+    </div>
+    <div class="t-bars" id="t-bars" aria-hidden="true"></div>
+  </header>
+  <div class="t-stage" id="stage">
+    <iframe id="tf" title="no.com.au walkthrough"></iframe>
+    <div class="spot" id="spot" aria-hidden="true"></div>
+    <div class="t-shield" id="shield" title="Paused? Press Pause to look around yourself"></div>
+    <div class="t-end" id="end" hidden>
+      <span class="logo inv">n<span class="o"></span>.<small>com.au</small></span>
+      <h2>The call: a 90&#8209;day pilot with one council.</h2>
+      <p>Reports are free. We collect next working day, recycle it, and prove it. The money is in collection and recycling.</p>
+      <div class="cta-row">
+        <button class="btn lg" type="button" id="again">Watch again</button>
+        <a class="btn white lg" href="plan.html">Read the business case</a>
+        <a class="btn ghost-w lg" href="report.html">Try the app yourself</a>
+      </div>
+    </div>
+  </div>
+  <footer class="t-cap" aria-live="polite">
+    <span class="t-n mono" id="t-n"></span>
+    <div id="t-txt"><h2 id="t-h"></h2><p id="t-p"></p></div>
+  </footer>
+</div>
+<script src="no.js?v=1791040865"></script>
+<script>
+(function(){
+  var $=NO.$, tf=$('#tf'), stage=$('#stage'), spot=$('#spot');
+  var demoId=null, cur=-1, timer=null, startAt=0, left=0, paused=false, raf=null, spotSel=null, spotT=null, loaded='';
+  var mob=window.matchMedia('(max-width:860px)').matches;
+  var W=function(){ return tf.contentWindow; };
+  var B=[
+    {u:'index.html',h:'Report dumped rubbish in three taps.',p:'Free for residents. Councils act from one email. Our crews collect it and recycle it.',s:'.hero h1',d:6000},
+    {u:'report.html',h:'1. Snap it',p:'A photo of the pile. One is plenty.',s:'.phone',d:3800,run:function(w){ w.NODEMO.begin(); w.NODEMO.photo(); }},
+    {h:'2. Pin it',p:'It works out who\'s responsible: the council, state roads, rail or parks.',s:'.phone',d:6000,run:function(w){ w.NODEMO.step(2); setTimeout(function(){ w.NODEMO.pin(-38.1385,144.3489); },300); }},
+    {h:'3. Tap what it is',p:'Mattress, couch, tyres, rubble. EPA Victoria gets copied on the risky stuff.',s:'.phone',d:4800,run:function(w){ w.NODEMO.step(3); setTimeout(function(){ w.NODEMO.pick(['couch','mattress'],'trailer'); },400); }},
+    {h:'Sent. The clock starts.',p:'It runs in public until the rubbish is gone.',s:'.phone',d:4200,run:function(w){ w.NODEMO.send(); }},
+    {h:'The council gets one email',p:'Photo, map pin and the details. One tap to act. No login.',s:'.council',d:5000,run:function(w){ w.NODEMO.sheet(true); }},
+    {h:'One tap books our crew',p:'Collected the next working day.',s:'.council',d:4200,run:function(w){ w.NODEMO.ack(); setTimeout(function(){ w.NODEMO.book(); },900); }},
+    {h:'Collected and recycled',p:'The resident gets a receipt showing what was recovered and where it went.',s:'.phone',d:6500,run:function(w){ w.NODEMO.collect(); setTimeout(function(){ w.NODEMO.sheet(false); },900); setTimeout(function(){ w.NODEMO.toReceipt(); },1600); }},
+    {u:function(){ return 'r.html#'+(demoId||'NO-24755'); },h:'Every report gets a public page',p:'Who had it, when, and how long it took.',s:'.bigclock',d:5000},
+    {u:'map.html',h:'The live map',p:'Every open report counting up. Overdue ones go red.',s:mob?null:'.mp-map',d:5000},
+    {u:'console.html',h:'The council console',p:'Inbox, targets and anything overdue, in one place.',s:'.itable',d:5000},
+    {h:'Not theirs? One tap passes it on',p:'To VicTrack, state roads or a private owner. The clock keeps running.',s:'.cn-det',d:5800,run:function(w){ w.NOCONSOLE.open('NO-24790'); setTimeout(function(){ w.NOCONSOLE.act('pass'); },800); }},
+    {h:'Hotspots',p:'Repeat sites get signs, cameras and free drop-off days.',s:'#hlist',d:5000,run:function(w){ w.NOCONSOLE.close(); w.NOCONSOLE.view('hot'); }},
+    {h:'Monthly report',p:'Ready for council papers, with the recovery figures.',s:'.doc-kpis',d:4500,run:function(w){ w.NOCONSOLE.view('month'); }},
+    {u:'councils.html#plans',h:'How it makes money',p:'Reports are free. The console is paid. The real money is collection and recycling.',s:'#plans',d:6500},
+    {u:'rid.html#mattress',h:'It cuts dumping too',p:'Residents are shown the legal way: Trash, JUNK, Freecycle and drop-offs.',s:'.ways',d:5200},
+    {u:'plan.html',h:'The call',p:'A 90-day pilot with one council we already work with.',s:'.call',d:6500}
+  ];
+  $('#t-bars').innerHTML=B.map(function(){return '<i><b></b></i>';}).join('');
+  var bars=NO.$$('#t-bars b');
+
+  function caption(i){
+    var b=B[i]; $('#t-n').textContent=(i+1<10?'0':'')+(i+1)+' / '+B.length;
+    $('#t-h').textContent=b.h; $('#t-p').textContent=b.p;
+    var t=$('#t-txt'); t.classList.remove('fresh'); void t.offsetWidth; t.classList.add('fresh');
+  }
+  function load(url,cb){
+    var path=url.split('#')[0];
+    if(loaded===url){ cb(); return; }
+    if(loaded.split('#')[0]===path && url.indexOf('#')>-1 && path!=='r.html'){ try{ W().location.hash=url.split('#')[1]; }catch(e){} loaded=url; setTimeout(cb,300); return; }
+    loaded=url; tf.onload=function(){ tf.onload=null; setTimeout(cb,mob?700:600); }; tf.src=url;
+  }
+  function placeSpot(){
+    if(!spotSel){ spot.classList.remove('on'); return; }
+    var d; try{ d=W().document; }catch(e){ return; }
+    var el=d.querySelector(spotSel); if(!el){ spot.classList.remove('on'); return; }
+    var r=el.getBoundingClientRect(), sw=stage.clientWidth, sh=stage.clientHeight, p=8;
+    var x=Math.max(6,r.left-p), y=Math.max(6,r.top-p), x2=Math.min(sw-6,r.right+p), y2=Math.min(sh-6,r.bottom+p);
+    if((x2-x)*(y2-y)>sw*sh*0.82||x2-x<20||y2-y<20){ spot.classList.remove('on'); return; }
+    spot.style.left=x+'px'; spot.style.top=y+'px'; spot.style.width=(x2-x)+'px'; spot.style.height=(y2-y)+'px'; spot.classList.add('on');
+  }
+  function focus(sel){
+    spotSel=sel; spot.classList.remove('on');
+    if(!sel) return;
+    try{ var el=W().document.querySelector(sel); if(el&&!el.closest('.phone')&&!el.closest('.council')) el.scrollIntoView({behavior:'smooth',block:'center'}); }catch(e){}
+    clearInterval(spotT); setTimeout(placeSpot,550); spotT=setInterval(placeSpot,400);
+  }
+  function go(i){
+    clearTimeout(timer); cancelAnimationFrame(raf);
+    if(i>=B.length){ return finish(); }
+    cur=i; var b=B[i];
+    bars.forEach(function(x,k){ x.style.width=k<i?'100%':'0%'; });
+    caption(i);
+    var start=function(){
+      try{ if(b.run) b.run(W()); }catch(e){ console.warn('tour step',i,e); }
+      if(i===4) setTimeout(function(){ try{ demoId=W().NODEMO.id(); }catch(e){} },600);
+      focus(b.s);
+      left=b.d; startAt=performance.now(); if(!paused) tick();
+    };
+    var url=typeof b.u==='function'?b.u():b.u;
+    if(url) load(url,start); else start();
+  }
+  function tick(){
+    clearTimeout(timer);
+    timer=setTimeout(function(){ go(cur+1); },left);
+    var b=B[cur], st=performance.now(), base=b.d-left;
+    (function frame(){ var el=base+(performance.now()-st); bars[cur].style.width=Math.min(100,el/b.d*100)+'%'; if(!paused&&el<b.d) raf=requestAnimationFrame(frame); })();
+    startAt=st;
+  }
+  function pause(p){
+    paused=p; $('#t-pause').textContent=p?'Play':'Pause'; $('#shield').hidden=p; document.body.classList.toggle('t-paused',p);
+    if(p){ clearTimeout(timer); cancelAnimationFrame(raf); left=Math.max(300,left-(performance.now()-startAt)); }
+    else tick();
+  }
+  function finish(){
+    clearInterval(spotT); spot.classList.remove('on'); bars.forEach(function(x){x.style.width='100%';});
+    $('#end').hidden=false; $('#t-n').textContent='Done'; $('#t-h').textContent='That\'s the whole thing.'; $('#t-p').textContent='Watch again, read the one-page business case, or try the app yourself.';
+  }
+  $('#t-pause').onclick=function(){ pause(!paused); };
+  $('#t-next').onclick=function(){ if(paused) pause(false); go(cur+1); };
+  $('#again').onclick=function(){ $('#end').hidden=true; loaded=''; go(0); };
+  document.addEventListener('keydown',function(e){
+    if(e.key===' '){ e.preventDefault(); pause(!paused); }
+    if(e.key==='ArrowRight') $('#t-next').click();
+    if(e.key==='Escape') location.href='index.html';
+  });
+  window.addEventListener('resize',placeSpot);
+  go(0);
+})();
+</script>
+</body>
+</html>

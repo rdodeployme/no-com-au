@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Report · no.com.au</title>
+<meta name="description" content="A dumped rubbish report on no.com.au, with its live clock.">
+<meta name="theme-color" content="#F4F3EF">
+<meta property="og:title" content="Report · no.com.au">
+<meta property="og:description" content="A dumped rubbish report on no.com.au, with its live clock.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='11.5' fill='white' stroke='%23D8261C' stroke-width='6'/%3E%3Cpath d='M16 16V9.5' stroke='%23141414' stroke-width='3.2' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;700;800;900&family=Overpass+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css"><link rel="stylesheet" href="no.css?v=1791040865">
+</head>
+<body class="page-r">
+<header class="site-head"><div class="wrap bar">
+<a class="logo" href="index.html" aria-label="no.com.au home">n<span class="o"></span>.<small>com.au</small></a>
+<nav aria-label="Main"><a href="index.html#how">How it works</a><a href="map.html" aria-current="page">Live map</a><a href="rid.html">Get rid of stuff</a><a href="councils.html">For councils</a></nav>
+<a class="btn sm" href="report.html">Report dumping</a>
+<button class="menu-btn" type="button" data-menu aria-label="Menu" aria-expanded="false"><svg class="ic" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M5 9h22M5 16h22M5 23h22"/></svg></button>
+</div></header>
+<main class="rpg"><div class="wrap">
+  <a class="crumb" href="map.html" id="crumb">Live map</a>
+  <div id="rp"></div>
+</div></main>
+<footer class="site-foot"><div class="wrap">
+<div class="foot-grid">
+<div><a class="logo inv" href="index.html" aria-label="no.com.au home">n<span class="o"></span>.<small>com.au</small></a>
+<p style="margin-top:16px;max-width:27em">Report dumped rubbish in under a minute. We get it to the right people, keep the clock running in public, and recycle what gets collected.</p>
+<p class="rg">A Recycle Group initiative</p></div>
+<div><h4>Residents</h4><ul><li><a href="report.html">Report dumping</a></li><li><a href="map.html">Live map</a></li><li><a href="rid.html">Get rid of stuff</a></li><li><a href="index.html#faq">Questions</a></li></ul></div>
+<div><h4>Councils and land managers</h4><ul><li><a href="councils.html">How it works for you</a></li><li><a href="console.html">Demo console</a></li><li><a href="councils.html#pilot">Start a pilot</a></li></ul></div>
+</div>
+<p class="fine">Working prototype. Reports, clocks and figures on this site are samples and no emails are sent. Routing uses ABS council boundaries and OpenStreetMap data. Photos from Unsplash. Map tiles &copy; Esri.</p>
+</div></footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script src="no.js?v=1791040865"></script>
+<script>
+(function(){
+  var $=NO.$, $$=NO.$$, I=NO.icon, esc=NO.esc, map=null;
+  $('#crumb').insertAdjacentHTML('afterbegin',I('back'));
+  var id=decodeURIComponent((location.hash||'').slice(1));
+  function render(){
+    var r=NO.store.get(id), el=$('#rp');
+    if(!r){ el.innerHTML='<div class="missing"><h1 class="h-l">We can\'t find that report.</h1><p class="lede" style="margin:18px 0 26px">Reports you make are kept in this browser while this is a prototype. Try the live map, or make a new report.</p><div class="cta-row"><a class="btn ink" href="map.html">Live map</a><a class="btn" href="report.html">Report dumping</a></div></div>'; return; }
+    document.title=r.id+' · '+NO.typeList(r.types)+' in '+r.suburb+' · no.com.au';
+    var s=NO.status(r), c=NO.collectedAt(r), due=NO.due(r.created), late=s!=='done'&&NO.overdue(r);
+    var conf=r.events.filter(function(e){return e.k==='confirmed';}).reduce(function(a,e){return a+e.n;},0);
+    var photos=r.photos||[];
+    var top='<div class="rp-top"><div>'+NO.chip(r)+(r.sample?' <span class="note-sample" style="margin-left:10px">Sample report</span>':'')+
+      '<h1>'+esc(NO.typeList(r.types))+'</h1><p>'+esc([r.place,r.suburb].filter(Boolean).join(', '))+'. Reported '+esc(NO.whenl(r.created))+'. Ref '+esc(r.id)+'.</p></div>'+
+      '<div class="bigclock'+(s==='done'?' done':'')+'"><div class="lbl">'+(s==='done'?'Collected in':'On the clock')+'</div><div class="v" data-from="'+r.created+'"'+(c?' data-until="'+c+'"':'')+'></div>'+
+      '<div class="s">'+(s==='done'?'Collected '+esc(NO.when(c)):late?'Past the next-day target ('+esc(NO.dayl(due))+', 5pm)':'Target: collected by '+esc(NO.dayl(due))+', 5pm')+'</div></div></div>';
+    var ph='<figure class="rp-photo'+(s==='done'?' done':'')+'">'+(photos.length?'<img id="main-ph" src="'+NO.img(photos[0],1200,900)+'" alt="'+esc(r.alt||'Photo of the dumped rubbish')+'">':'<div class="noph">'+I(r.types[0]||'other')+'<span>No photo with this report</span></div>')+
+      (s==='done'?'<div class="stamp">Collected<small>'+NO.human(c-r.created)+' after it was reported</small></div>':'')+'</figure>'+
+      (photos.length>1?'<div class="thumbs">'+photos.map(function(p,i){return '<img src="'+NO.img(p,200,160)+'" data-i="'+i+'" class="'+(i?'':'on')+'" alt="Photo '+(i+1)+'">';}).join('')+'</div>':'');
+    var facts=[['What',esc(NO.typeList(r.types))],['How much',esc(r.size?NO.S[r.size].label:'Not given')],['Blocking',r.blocking?'Yes':'No'],['Turned up',esc(r.seen||'Not sure')],
+      ['Responsible',esc(r.to)+'<br><span class="small" style="font-weight:600">'+esc(r.why||'')+'</span>']];
+    if(r.cc&&r.cc.length) facts.push(['Copied to',esc(r.cc.join(', '))]);
+    if(conf) facts.push(['Also seen by',conf+(conf>1?' more people':' more person')]);
+    var left='<div>'+ph+'<dl class="facts">'+facts.map(function(f){return '<dt>'+f[0]+'</dt><dd>'+f[1]+'</dd>';}).join('')+'</dl>'+
+      (s!=='done'?'<div class="seen-too"><div><b>Seen it too?</b><p class="small">Add yourself so they know it matters. No details needed.</p></div><button class="btn ink" id="plus1" type="button">'+I('eye')+'I\'ve seen it</button></div>':'')+'</div>';
+    var tl=r.events.slice().sort(function(a,b){return a.t-b.t;}).map(function(e){
+      var cls=e.k==='reported'?'r':(e.k==='collected'||e.k==='receipt')?'g':'';
+      return '<li class="on '+cls+'"><i></i><div>'+esc(NO.eventText(e,r))+'</div><span>'+NO.time(e.t)+'<br>'+NO.day(e.t)+'</span></li>';
+    }).join('');
+    if(s!=='done') tl+='<li><i></i><div>Collected</div><span>Waiting</span></li>';
+    var right='<div class="rp-right"><div class="rp-map" id="rmap"></div><div class="card"><h3>What\'s happened</h3><ol class="tl">'+tl+'</ol></div>'+
+      (s==='done'?NO.receiptHTML(r,{cls:'on-paper'}):'')+
+      '<div class="share-row"><button class="btn ghost" id="share" type="button">'+I('share')+'Share</button><a class="btn" href="report.html">'+I('camera')+'Report something else</a></div></div>';
+    el.innerHTML=top+'<div class="rp-grid">'+left+right+'</div>';
+    NO.bindClocks(el);
+    if(window.L){
+      if(map){ map.remove(); map=null; }
+      map=L.map('rmap',{scrollWheelZoom:false}).setView([r.lat,r.lon],16); NO.tiles(map,true,'street'); NO.marker(r).addTo(map);
+    }
+    var t=$('.thumbs'); if(t) t.onclick=function(e){var im=e.target.closest('img');if(!im)return;$$('img',t).forEach(function(x){x.classList.remove('on');});im.classList.add('on');$('#main-ph').src=NO.img(photos[+im.dataset.i],1200,900);};
+    var p=$('#plus1'); if(p) p.onclick=function(){ var rr=NO.store.get(id); NO.addEvent(rr,'confirmed',{n:1}); NO.store.save(rr); NO.toast('Thanks. Added to the report.'); };
+    $('#share').onclick=function(){ var url=location.href; if(navigator.share) navigator.share({title:'Dumped rubbish on no.com.au',url:url}).catch(function(){}); else if(navigator.clipboard) navigator.clipboard.writeText(url).then(function(){NO.toast('Link copied');}); };
+  }
+  render();
+  if(/added=1/.test(location.search)) setTimeout(function(){NO.toast('Thanks. We\'ve added yours to this report.');},300);
+  NO.onChange(render);
+  window.addEventListener('hashchange',function(){ id=decodeURIComponent(location.hash.slice(1)); render(); });
+})();
+</script>
+</body>
+</html>
