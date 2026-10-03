@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;700;800;900&family=Overpass+Mono:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css"><link rel="stylesheet" href="no.css?v=1791040865">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css"><link rel="stylesheet" href="no.css?v=1791046749">
 </head>
 <body class="page-r">
 <header class="site-head"><div class="wrap bar">
@@ -36,7 +36,7 @@
 <p class="fine">Working prototype. Reports, clocks and figures on this site are samples and no emails are sent. Routing uses ABS council boundaries and OpenStreetMap data. Photos from Unsplash. Map tiles &copy; Esri.</p>
 </div></footer>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-<script src="no.js?v=1791040865"></script>
+<script src="no.js?v=1791046749"></script>
 <script>
 (function(){
   var $=NO.$, $$=NO.$$, I=NO.icon, esc=NO.esc, map=null;
@@ -52,7 +52,7 @@
     var top='<div class="rp-top"><div>'+NO.chip(r)+(r.sample?' <span class="note-sample" style="margin-left:10px">Sample report</span>':'')+
       '<h1>'+esc(NO.typeList(r.types))+'</h1><p>'+esc([r.place,r.suburb].filter(Boolean).join(', '))+'. Reported '+esc(NO.whenl(r.created))+'. Ref '+esc(r.id)+'.</p></div>'+
       '<div class="bigclock'+(s==='done'?' done':'')+'"><div class="lbl">'+(s==='done'?'Collected in':'On the clock')+'</div><div class="v" data-from="'+r.created+'"'+(c?' data-until="'+c+'"':'')+'></div>'+
-      '<div class="s">'+(s==='done'?'Collected '+esc(NO.when(c)):late?'Past the next-day target ('+esc(NO.dayl(due))+', 5pm)':'Target: collected by '+esc(NO.dayl(due))+', 5pm')+'</div></div></div>';
+      '<div class="s">'+(s==='done'?'Collected '+esc(NO.whenl(c)):late?'Past the next-day target ('+esc(NO.dayl(due))+', 5pm)':'Target: collected by '+esc(NO.dayl(due))+', 5pm')+'</div></div></div>';
     var ph='<figure class="rp-photo'+(s==='done'?' done':'')+'">'+(photos.length?'<img id="main-ph" src="'+NO.img(photos[0],1200,900)+'" alt="'+esc(r.alt||'Photo of the dumped rubbish')+'">':'<div class="noph">'+I(r.types[0]||'other')+'<span>No photo with this report</span></div>')+
       (s==='done'?'<div class="stamp">Collected<small>'+NO.human(c-r.created)+' after it was reported</small></div>':'')+'</figure>'+
       (photos.length>1?'<div class="thumbs">'+photos.map(function(p,i){return '<img src="'+NO.img(p,200,160)+'" data-i="'+i+'" class="'+(i?'':'on')+'" alt="Photo '+(i+1)+'">';}).join('')+'</div>':'');

@@ -450,6 +450,12 @@
     L.tileLayer(B + "Base/MapServer/tile/{z}/{y}/{x}", { attribution: A, maxNativeZoom: 16, maxZoom: 19 }).addTo(map);
     if (labels !== false) L.tileLayer(B + "Reference/MapServer/tile/{z}/{y}/{x}", { maxNativeZoom: 16, maxZoom: 19 }).addTo(map);
   };
+  /* fetch street tiles around a spot ahead of time, so a map opens already drawn */
+  NO.warm = function (lat, lon, z, r) {
+    var n = Math.pow(2, z), x = Math.floor((lon + 180) / 360 * n), la = lat * Math.PI / 180;
+    var y = Math.floor((1 - Math.log(Math.tan(la) + 1 / Math.cos(la)) / Math.PI) / 2 * n);
+    for (var i = -r; i <= r; i++) for (var j = -r; j <= r; j++) { var im = new Image(); im.src = ESRI + "World_Street_Map/MapServer/tile/" + z + "/" + (y + j) + "/" + (x + i); }
+  };
   NO.marker = function (r, extra) {
     var s = NO.status(r), late = s !== "done" && NO.overdue(r);
     return L.marker([r.lat, r.lon], Object.assign({ icon: L.divIcon({ className: "mk mk-" + (late ? "late" : s), html: "<i></i>", iconSize: [22, 22], iconAnchor: [11, 11] }), keyboard: true, title: r.id }, extra || {}));
@@ -473,7 +479,16 @@
   };
 
   /* ---------- page chrome ---------- */
-  try { if (window.self !== window.top) document.documentElement.classList.add("in-tour"); } catch (e) { document.documentElement.classList.add("in-tour"); }
+  /* Inside Richard's version (tour.html) pages run in a frame: keep them still and calm */
+  var inTour = false;
+  try { inTour = window.self !== window.top; } catch (e) { inTour = true; }
+  NO.inTour = inTour;
+  NO.SPOT = { lat: -38.1385, lon: 144.3489 }; /* sample spot: Pakington St, Geelong West */
+  NO.SAMPLE_PHOTO = "1703296958227-d01823347876";
+  if (inTour) {
+    document.documentElement.classList.add("in-tour");
+    if (window.L && L.Map) L.Map.mergeOptions({ zoomAnimation: false, fadeAnimation: false, markerZoomAnimation: false });
+  }
   document.addEventListener("click", function (e) {
     var b = e.target.closest("[data-menu]");
     if (b) { document.body.classList.toggle("menu-open"); b.setAttribute("aria-expanded", document.body.classList.contains("menu-open")); }

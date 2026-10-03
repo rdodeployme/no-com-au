@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;700;800;900&family=Overpass+Mono:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css"><link rel="stylesheet" href="no.css?v=1791041104">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css"><link rel="stylesheet" href="no.css?v=1791046749">
 </head>
 <body class="page-report">
 <header class="rp-head">
@@ -36,6 +36,7 @@
           <label class="snap" id="snap"><input type="file" accept="image/*" capture="environment" id="cam" aria-label="Take a photo"><span id="snap-ic"></span><b>Take a photo</b><span class="snap-sub">Opens your camera</span></label>
           <div class="shots" id="shots"></div>
           <label class="alt-link" id="gal-wrap"><input type="file" accept="image/*" multiple id="gal" aria-label="Choose photos"><span id="gal-ic"></span>Choose from your photos</label>
+          <button class="sample-ph" id="sample-ph" type="button">Just trying it out? <b>Use a sample photo</b></button>
           <p class="hint">No photo? That's fine, you can skip it.</p>
         </section>
 
@@ -134,7 +135,7 @@
   <div class="scrim" id="scrim" hidden></div>
 </main>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-<script src="no.js?v=1791041104"></script>
+<script src="no.js?v=1791046749"></script>
 <script>
 (function(){
   var $=NO.$, $$=NO.$$, I=NO.icon, esc=NO.esc;
@@ -180,6 +181,7 @@
       var addr = z<15 ? 'Zoom in and put the pin on the rubbish' : (!place||looking) ? 'Finding the address' : (place.street ? place.street+(place.suburb?', '+place.suburb:'') : (place.suburb||'Pinned spot'));
       h+='<div class="place"><div class="pl-addr">'+I('pin')+'<span>'+esc(addr)+'</span></div>';
       if(rt&&z>=15&&!looking) h+='<div class="pl-to">Goes to <b>'+esc(rt.to)+'</b> <span class="why">'+esc(rt.why)+'</span></div>';
+      if(center&&NO.dist(center.lat,center.lon,NO.SPOT.lat,NO.SPOT.lon)<4) h+='<p class="pl-sample">Sample spot for the demo. Move the map or tap Use my location.</p>';
       h+='</div>';
       x.innerHTML=h;
       n.textContent=z<16?'Zoom in on the spot':'Next';
@@ -207,19 +209,20 @@
   }
   function shots(){
     var n=R.photos.length;
-    $('#snap').hidden=n>0; $('#gal-wrap').hidden=n>0;
+    $('#snap').hidden=n>0; $('#gal-wrap').hidden=n>0; $('#sample-ph').hidden=n>0;
     $('#shots').innerHTML=R.photos.map(function(u,i){return '<div class="shot"><img src="'+NO.img(u,600,600)+'" alt="Your photo '+(i+1)+'"><button type="button" data-rm="'+i+'" aria-label="Remove photo">'+I('close')+'</button></div>';}).join('')+
       (n&&n<4?'<label class="shot add"><input type="file" accept="image/*" multiple aria-label="Add another photo">'+I('plus')+'<span>Add another</span></label>':'');
     var a=$('#shots input'); if(a) a.onchange=function(e){addFiles(e.target.files);e.target.value='';};
   }
   $('#cam').onchange=function(e){addFiles(e.target.files);e.target.value='';};
+  $('#sample-ph').onclick=function(){ NO.buzz(); R.photos=[NO.SAMPLE_PHOTO]; shots(); foot(); };
   $('#gal').onchange=function(e){addFiles(e.target.files);e.target.value='';};
   $('#shots').addEventListener('click',function(e){var b=e.target.closest('[data-rm]');if(!b)return;R.photos.splice(+b.dataset.rm,1);shots();foot();});
 
   /* ---------- step 2: map ---------- */
   function initMap(){
     if(map){ setTimeout(function(){map.invalidateSize();},50); return; }
-    map=L.map('pmap',{zoomControl:false}).setView([-37.8136,144.9631],11);
+    map=L.map('pmap',{zoomControl:false}).setView([NO.SPOT.lat,NO.SPOT.lon],18);
     var street=NO.tiles(map,true,'street'), sat=null;
     $('#maptype').onclick=function(){
       var on=!map.getContainer().classList.contains('sat');
@@ -441,32 +444,53 @@
   show(1);
 
   /* hooks used by Richard's version (tour.html) to drive the app */
+  var sending=null;
+  function quickSend(){
+    if(report) return Promise.resolve();
+    if(sending) return sending;
+    if(!R.photos.length){ R.photos=[NO.SAMPLE_PHOTO]; shots(); }
+    if(!R.types.length){ ['couch','mattress'].forEach(function(t){ var b=$('#tiles [data-t="'+t+'"]'); if(b) b.setAttribute('aria-pressed','true'); }); R.types=['couch','mattress']; }
+    if(!R.size){ var z=$('#sizes [data-v="trailer"]'); if(z){ z.setAttribute('aria-pressed','true'); R.size='trailer'; } }
+    if(map){ var c=map.getCenter(); center={lat:c.lat,lon:c.lng}; }
+    if(!center) center={lat:NO.SPOT.lat,lon:NO.SPOT.lon};
+    sending=new Promise(function(res){
+      var done=false, go=function(p){ if(done) return; done=true; if(p&&p.ok) place=p; looking=false; send(); res(); };
+      if(place&&!looking) go(place); else { NO.lookup(center.lat,center.lon).then(go); setTimeout(function(){ go(null); },2500); }
+    });
+    return sending;
+  }
+  function bookNow(){ var b=$('#a-book'); if(b&&!b.disabled){ b.click(); var x=$('[data-book="Recycle Group crew"]'); if(x) x.click(); } }
+  function collectNow(){ var b=$('#a-done'); if(b&&!b.disabled){ b.click(); var x=$('#confirm-done'); if(x) x.click(); } }
   window.NODEMO={
     begin:function(){ demo=true; NO.store.purge(function(r){return r.demo;}); },
-    photo:function(){ R.photos=['1703296958227-d01823347876']; shots(); foot(); },
-    step:function(n){ show(n); },
+    photo:function(){ if(report) return; R.photos=[NO.SAMPLE_PHOTO]; shots(); foot(); },
+    step:function(n){ if(report) return; show(n); },
     pin:function(lat,lon){
+      if(report) return;
       initMap();
-      setTimeout(function(){ if(document.hidden) map.setView([lat,lon],18,{animate:false}); else map.flyTo([lat,lon],18,{duration:1.8}); },250);
-      setTimeout(function(){ var c=map.getCenter(); if(NO.dist(c.lat,c.lng,lat,lon)>40||map.getZoom()<18){ map.stop(); map.setView([lat,lon],18,{animate:false}); onMove(); } },2600);
+      setTimeout(function(){ map.setView([lat,lon],18,{animate:false}); onMove(); },120);
       NO.lookup(lat,lon);
     },
     pick:function(types,size){
-      types.forEach(function(t,i){ setTimeout(function(){ var b=$('#tiles [data-t="'+t+'"]'); if(b&&b.getAttribute('aria-pressed')!=='true') b.click(); },i*450); });
-      if(size) setTimeout(function(){ var s=$('#sizes [data-v="'+size+'"]'); if(s&&s.getAttribute('aria-pressed')!=='true') s.click(); },types.length*450+250);
+      if(report) return;
+      types.forEach(function(t,i){ setTimeout(function(){ if(report) return; var b=$('#tiles [data-t="'+t+'"]'); if(b&&b.getAttribute('aria-pressed')!=='true') b.click(); },i*450); });
+      if(size) setTimeout(function(){ if(report) return; var s=$('#sizes [data-v="'+size+'"]'); if(s&&s.getAttribute('aria-pressed')!=='true') s.click(); },types.length*450+250);
     },
-    send:function(){
-      if(map){ var c=map.getCenter(); center={lat:c.lat,lon:c.lng}; }
-      if(!R.types.length) R.types=['couch'];
-      if(place&&!looking){ send(); return; }
-      var done=false, go=function(p){ if(done) return; done=true; if(p&&p.ok) place=p; looking=false; send(); };
-      NO.lookup(center.lat,center.lon).then(go); setTimeout(function(){ go(null); },2500);
+    send:function(){ return quickSend(); },
+    ensure:function(t){
+      return quickSend().then(function(){
+        var s=NO.status(cur());
+        if((t==='sched'||t==='done')&&(s==='open'||s==='ack')) bookNow();
+        if(t==='done'&&NO.status(cur())!=='done') collectNow();
+      });
     },
-    sheet:function(o){ if(window.matchMedia('(max-width:860px)').matches){ sheet(o); if(o) setTimeout(function(){ if(mmap) mmap.invalidateSize(); },320); } },
+    status:function(){ var r=cur(); return r?NO.status(r):null; },
+    sheet:function(o,to){ if(window.matchMedia('(max-width:860px)').matches){ sheet(o); if(o) setTimeout(function(){ if(mmap) mmap.invalidateSize(); },60);
+      var c=$('#council'), x=to&&$(to); if(o&&x) c.scrollTo({top:Math.max(0,x.getBoundingClientRect().top-c.getBoundingClientRect().top+c.scrollTop-150),behavior:'smooth'}); } },
     ack:function(){ var b=$('#a-ack'); if(b&&!b.disabled) b.click(); },
-    book:function(){ var b=$('#a-book'); if(b&&!b.disabled){ b.click(); setTimeout(function(){ var x=$('[data-book="Recycle Group crew"]'); if(x) x.click(); },600); } },
-    collect:function(){ var b=$('#a-done'); if(b&&!b.disabled){ b.click(); setTimeout(function(){ var x=$('#confirm-done'); if(x) x.click(); },700); } },
-    toReceipt:function(){ var r=$('#d-receipt'); if(r) r.scrollIntoView({behavior:'smooth',block:'start'}); },
+    book:function(){ var b=$('#a-book'); if(b&&!b.disabled){ b.click(); setTimeout(function(){ var x=$('[data-book="Recycle Group crew"]'); if(x) x.click(); },900); } },
+    collect:function(){ var b=$('#a-done'); if(b&&!b.disabled){ b.click(); setTimeout(function(){ var x=$('#confirm-done'); if(x) x.click(); },1000); } },
+    toReceipt:function(){ var r=$('#d-receipt'), m=$('#main'); if(r&&r.firstChild) m.scrollTo({top:r.getBoundingClientRect().top-m.getBoundingClientRect().top+m.scrollTop-12,behavior:'smooth'}); },
     id:function(){ return report&&report.id; }
   };
 })();

@@ -12,140 +12,286 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;700;800;900&family=Overpass+Mono:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="no.css?v=1791041412">
+<link rel="stylesheet" href="no.css?v=1791046749">
 </head>
 <body class="page-tour">
-<div class="tour">
-  <header class="t-top">
-    <div class="t-row">
+<div class="tv">
+  <aside class="tv-side">
+    <div class="tv-head">
       <a class="logo inv" href="index.html" aria-label="no.com.au home">n<span class="o"></span>.</a>
-      <b class="t-title">Richard's version <span>the whole thing in 90 seconds</span></b>
-      <div class="t-ctl">
-        <button type="button" id="t-pause" aria-label="Pause">Pause</button>
-        <button type="button" id="t-next" aria-label="Next">Next</button>
-        <a href="index.html" id="t-exit" aria-label="Exit">Exit</a>
-      </div>
+      <b class="tv-title">Richard's version</b>
+      <span class="tv-count mono" id="count"></span>
+      <a class="tv-exit" href="index.html">Exit</a>
     </div>
-    <div class="t-bars" id="t-bars" aria-hidden="true"></div>
-  </header>
-  <div class="t-stage" id="stage">
-    <iframe id="tf" title="no.com.au walkthrough"></iframe>
-    <div class="spot" id="spot" aria-hidden="true"></div>
-    <div class="t-shield" id="shield" title="Paused? Press Pause to look around yourself"></div>
-    <div class="t-end" id="end" hidden>
+    <div class="tv-cap" aria-live="polite">
+      <div class="tv-mode"><span class="mono" id="num"></span><span id="mode"></span></div>
+      <h2 id="h">no.com.au in 8 steps</h2>
+      <p class="tv-lead" id="lead"></p>
+      <p class="tv-now" id="now">Starting</p>
+      <ol class="tv-lines" id="lines"></ol>
+      <div class="tv-turn" id="turn" hidden></div>
+    </div>
+    <ol class="tv-list" id="list" aria-label="Steps"></ol>
+    <div class="tv-ctl">
+      <button type="button" id="b-back" aria-label="Back"></button>
+      <button type="button" id="b-play">Pause</button>
+      <button type="button" class="pri" id="b-next" aria-label="Next"></button>
+    </div>
+    <p class="tv-tip">Pause any time to click around yourself. Nothing to type: every screen runs on sample data.</p>
+  </aside>
+  <div class="tv-stage" id="stage">
+    <iframe class="tv-fr" title="no.com.au, step view"></iframe>
+    <iframe class="tv-fr" title="no.com.au, next step"></iframe>
+    <div class="tv-shield" id="shield" title="Click to pause and explore yourself"></div>
+    <div class="tv-busy" id="busy" hidden>Loading</div>
+    <div class="tv-cover" id="intro">
+      <span class="logo inv">n<span class="o"></span>.<small>com.au</small></span>
+      <h2>The whole thing in 8 steps.</h2>
+      <p>It plays on its own and takes about 90 seconds. Press Pause any time to click around yourself.</p>
+    </div>
+    <div class="tv-cover" id="end" hidden>
       <span class="logo inv">n<span class="o"></span>.<small>com.au</small></span>
       <h2>The call: a 90&#8209;day pilot with one council.</h2>
-      <p>Reports are free. We collect next working day, recycle it, and prove it. The money is in collection and recycling.</p>
+      <p>Reports are free. We collect next working day, recycle it and prove it. The money is in collection and recycling.</p>
       <div class="cta-row">
-        <button class="btn lg" type="button" id="again">Watch again</button>
-        <a class="btn white lg" href="plan.html">Read the business case</a>
-        <a class="btn ghost-w lg" href="report.html">Try the app yourself</a>
+        <button class="btn lg" type="button" id="e-self">Click through it yourself</button>
+        <button class="btn white lg" type="button" id="e-again">Watch again</button>
+        <a class="btn ghost-w lg" href="plan.html">Read the business case</a>
       </div>
+      <p class="fine">Going through it yourself: Back and Next move between screens, and you can click anything. Nothing to type.</p>
     </div>
   </div>
-  <footer class="t-cap" aria-live="polite">
-    <span class="t-n mono" id="t-n"></span>
-    <div id="t-txt"><h2 id="t-h"></h2><p id="t-p"></p></div>
-  </footer>
 </div>
-<script src="no.js?v=1791041412"></script>
+<script src="no.js?v=1791046749"></script>
 <script>
 (function(){
-  var $=NO.$, tf=$('#tf'), stage=$('#stage'), spot=$('#spot');
-  var demoId=null, cur=-1, timer=null, startAt=0, left=0, paused=false, raf=null, spotSel=null, spotT=null, loaded='';
-  var mob=window.matchMedia('(max-width:860px)').matches;
-  var TV=Date.now().toString(36);
-  var W=function(){ return tf.contentWindow; };
-  var B=[
-    {u:'index.html',h:'Report dumped rubbish in three taps.',p:'Free for residents. Councils act from one email. Our crews collect it and recycle it.',s:'.hero h1',d:6000},
-    {u:'report.html',h:'1. Snap it',p:'A photo of the pile. One is plenty.',s:'.phone',d:3800,run:function(w){ w.NODEMO.begin(); w.NODEMO.photo(); }},
-    {h:'2. Pin it',p:'It works out who\'s responsible: the council, state roads, rail or parks.',s:'.phone',d:6000,run:function(w){ w.NODEMO.step(2); setTimeout(function(){ w.NODEMO.pin(-38.1385,144.3489); },300); }},
-    {h:'3. Tap what it is',p:'Mattress, couch, tyres, rubble. EPA Victoria gets copied on the risky stuff.',s:'.phone',d:4800,run:function(w){ w.NODEMO.step(3); setTimeout(function(){ w.NODEMO.pick(['couch','mattress'],'trailer'); },400); }},
-    {h:'Sent. The clock starts.',p:'It runs in public until the rubbish is gone.',s:'.phone',d:4200,run:function(w){ w.NODEMO.send(); }},
-    {h:'The council gets one email',p:'Photo, map pin and the details. One tap to act. No login.',s:'.council',d:5000,run:function(w){ w.NODEMO.sheet(true); }},
-    {h:'One tap books our crew',p:'Collected the next working day.',s:'.council',d:4200,run:function(w){ w.NODEMO.ack(); setTimeout(function(){ w.NODEMO.book(); },900); }},
-    {h:'Collected and recycled',p:'The resident gets a receipt showing what was recovered and where it went.',s:'.phone',d:6500,run:function(w){ w.NODEMO.collect(); setTimeout(function(){ w.NODEMO.sheet(false); },900); setTimeout(function(){ w.NODEMO.toReceipt(); },1600); }},
-    {u:function(){ return 'r.html#'+(demoId||'NO-24755'); },h:'Every report gets a public page',p:'Who had it, when, and how long it took.',s:'.bigclock',d:5000},
-    {u:'map.html',h:'The live map',p:'Every open report counting up. Overdue ones go red.',s:mob?null:'.mp-map',d:5000},
-    {u:'console.html',h:'The council console',p:'Inbox, targets and anything overdue, in one place.',s:'.itable',d:5000},
-    {h:'Not theirs? One tap passes it on',p:'To VicTrack, state roads or a private owner. The clock keeps running.',s:'.cn-det',d:5800,run:function(w){ w.NOCONSOLE.open('NO-24790'); setTimeout(function(){ w.NOCONSOLE.act('pass'); },800); }},
-    {h:'Hotspots',p:'Repeat sites get signs, cameras and free drop-off days.',s:'#hlist',d:5000,run:function(w){ w.NOCONSOLE.close(); w.NOCONSOLE.view('hot'); }},
-    {h:'Monthly report',p:'Ready for council papers, with the recovery figures.',s:'.doc-kpis',d:4500,run:function(w){ w.NOCONSOLE.view('month'); }},
-    {u:'councils.html#plans',h:'How it makes money',p:'Reports are free. The console is paid. The real money is collection and recycling.',s:'#plans',d:6500},
-    {u:'rid.html#mattress',h:'It cuts dumping too',p:'Residents are shown the legal way: Trash, JUNK, Freecycle and drop-offs.',s:'.ways',d:5200},
-    {u:'plan.html',h:'The call',p:'A 90-day pilot with one council we already work with.',s:'.call',d:6500}
-  ];
-  $('#t-bars').innerHTML=B.map(function(){return '<i><b></b></i>';}).join('');
-  var bars=NO.$$('#t-bars b');
+  var $=NO.$, $$=NO.$$, I=NO.icon, esc=NO.esc;
+  var stage=$('#stage'), shield=$('#shield'), mq=window.matchMedia('(max-width:860px)');
+  var SPOT=[NO.SPOT.lat,NO.SPOT.lon], TV=Date.now().toString(36), loads=0, demoId=null;
 
-  function caption(i){
-    var b=B[i]; $('#t-n').textContent=(i+1<10?'0':'')+(i+1)+' / '+B.length;
-    $('#t-h').textContent=b.h; $('#t-p').textContent=b.p;
-    var t=$('#t-txt'); t.classList.remove('fresh'); void t.offsetWidth; t.classList.add('fresh');
+  /* ---------- the eight steps ---------- */
+  var CH=[
+    {short:'Someone reports it',h:'Someone reports it',lead:'Free for residents. No app to download, no account. About 20 seconds.',page:'report.html',d:13000,
+      prep:function(w){ w.NODEMO.begin(); },
+      subs:[[300,'Snaps a photo',function(w){ w.NODEMO.photo(); }],
+            [2900,'Pins the spot. It works out who owns the land',function(w){ w.NODEMO.step(2); w.NODEMO.pin(SPOT[0],SPOT[1]); }],
+            [6600,'Taps what\'s there',function(w){ w.NODEMO.step(3); w.NODEMO.pick(['couch','mattress'],'trailer'); }],
+            [9800,'Sends it. A public clock starts',function(w){ w.NODEMO.send(); }]],
+      guide:['Tap <b>Use a sample photo</b>','Tap <b>Next</b>. The spot is already pinned','Tap what\'s there, then <b>Send report</b>'],
+      m:'Your turn: tap <b>Use a sample photo</b>, then <b>Next</b>, tap what\'s there and <b>Send</b>.',
+      done:function(w){ return !!w.NODEMO.id(); }},
+    {short:'The council gets one email',h:'The council gets one email',lead:'It goes to whoever owns the land, with the photo, pin and details. One tap to act, no login.',page:'report.html',cont:true,d:10500,
+      prep:function(w,fresh){ if(fresh) w.NODEMO.begin(); return w.NODEMO.ensure('sent').then(function(){ w.NODEMO.sheet(true); }); },
+      subs:[[0,'The email lands',null],[3600,'They tap "We\'re on it"',function(w){ w.NODEMO.sheet(true,'#m-actions'); w.NODEMO.ack(); }],[6200,'One more tap books our crew',function(w){ w.NODEMO.book(); }]],
+      guide:['You\'re the council now','Tap <b>Book a crew</b>, then <b>Recycle Group crew</b>','Watch the resident\'s phone update'],
+      m:'You\'re the council: tap <b>Book a crew</b>, then <b>Recycle Group crew</b>.',
+      done:function(w){ var s=w.NODEMO.status(); return s==='sched'||s==='done'; }},
+    {short:'We collect and recycle it',h:'We collect it and recycle it',lead:'Next working day. The resident gets a receipt showing what was recovered and where it went.',page:'report.html',cont:true,d:9500,
+      prep:function(w,fresh){ if(fresh) w.NODEMO.begin(); return w.NODEMO.ensure('sched').then(function(){ w.NODEMO.sheet(true,'#m-actions'); }); },
+      subs:[[600,'The crew collects it',function(w){ w.NODEMO.collect(); }],[3800,'The resident gets a receipt',function(w){ w.NODEMO.sheet(false); w.NODEMO.toReceipt(); }]],
+      guide:['Tap <b>Collected</b>','Then <b>Mark collected and issue receipt</b>'],
+      m:'Tap <b>Collected</b>, then <b>Mark collected</b>.',
+      done:function(w){ return w.NODEMO.status()==='done'; },
+      after:function(w){ setTimeout(function(){ w.NODEMO.sheet(false); w.NODEMO.toReceipt(); },700); }},
+    {short:'Everyone can see the clock',h:'Everyone can see the clock',lead:'Every report gets a public page: who has it and how long it took.',page:function(){ return 'r.html#'+(demoId||'NO-24755'); },d:7500,
+      guide:['Scroll down for the timeline and the receipt'],m:'Scroll down for the timeline and receipt.'},
+    {short:'The council console',h:'Councils run it from one screen',lead:'Every report, who has it and what\'s overdue. Not theirs? One tap passes it on and the clock keeps running.',page:'console.html',d:8500,
+      guide:['Click any report to open it','Try <b>Not ours</b> on the overdue tyres'],m:'Tap any report to open it.'},
+    {short:'Monthly report',h:'Proof for council papers',lead:'A monthly report: reports in, time to collect, and what was recovered.',page:'console.html?view=month',d:8000,
+      guide:['Scroll through the report'],m:'Scroll through the report.'},
+    {short:'How it makes money',h:'How it makes money',lead:'Reports are free. The console is a yearly subscription. The real money is collection and recycling.',page:'councils.html',top:'#pricing .head-row',off:44,d:8500,
+      guide:['Have a look, then press Next'],m:'Have a look, then tap Next.'},
+    {short:'It cuts dumping too',h:'It cuts dumping too',lead:'People are shown the easy legal way first: Trash, JUNK, Freecycle and council drop-offs.',page:'rid.html#mattress',top:'#tiles',d:7500,
+      guide:['Tap any item to see the easy way to get rid of it'],m:'Tap any item to see its options.'}
+  ];
+  var END={h:'The call',lead:'A 90-day pilot with one council. Reports are free; the money is in collection and recycling.'};
+
+  /* ---------- state ---------- */
+  var F=$$('.tv-fr').map(function(el){ return {el:el,url:'',gen:0,p:null}; }), act=0;
+  var cur=-1, seq=0, playing=true, live=false, ended=false, hold=false, okShown=false, el=0, last=0, ran=[], chk=0;
+  var introGate=new Promise(function(r){ setTimeout(r,2800); }), firstGo=true;
+  function W(f){ try{ return f.el.contentWindow; }catch(e){ return null; } }
+  function pageOf(ch){ return typeof ch.page==='function'?ch.page():ch.page; }
+  function bust(u){ var q=u.split('#'); return q[0]+(q[0].indexOf('?')>-1?'&':'?')+'tv='+TV+'.'+(++loads)+(q[1]?'#'+q[1]:''); }
+  function samePage(f,url){ try{ return f.url===url && (W(f).location.pathname.split('/').pop()||'index.html')===url.split(/[?#]/)[0]; }catch(e){ return false; } }
+
+  /* fit a real-size page into the stage, whole, without cutting anything off */
+  function fit(){
+    var w=stage.clientWidth, h=stage.clientHeight, vw, vh, s; if(!w||!h) return;
+    if(mq.matches){ vw=Math.max(400,w); s=w/vw; vh=h/s; }
+    else { vw=1280; s=w/vw; if(s>1.1){ s=1.1; vw=w/s; } vh=h/s; if(vh<820){ s=h/820; vh=820; vw=w/s; } }
+    F.forEach(function(f){ f.el.style.width=Math.ceil(vw)+'px'; f.el.style.height=Math.ceil(vh)+'px'; f.el.style.transform='scale('+s+')'; });
   }
-  function load(url,cb){
-    var path=url.split('#')[0];
-    if(loaded===url){ cb(); return; }
-    if(loaded.split('#')[0]===path && url.indexOf('#')>-1 && path!=='r.html'){ try{ W().location.hash=url.split('#')[1]; }catch(e){} loaded=url; setTimeout(cb,300); return; }
-    var q=url.split('#'), full=q[0]+(q[0].indexOf('?')>-1?'&':'?')+'tv='+TV+(q[1]?'#'+q[1]:'');
-    loaded=url; tf.onload=function(){ tf.onload=null; setTimeout(cb,mob?700:600); }; tf.src=full;
+
+  /* wait until a page has finished drawing (fonts, photos, map tiles) so nothing pops in on screen */
+  function settle(f){
+    var w=W(f), t0=Date.now();
+    return new Promise(function(res){
+      (function look(){
+        var n=0;
+        try{
+          var d=w.document;
+          n=d.querySelectorAll('.leaflet-tile:not(.leaflet-tile-loaded)').length;
+          Array.prototype.forEach.call(d.images,function(i){ if(!i.complete&&i.loading!=='lazy'&&i.getBoundingClientRect().top<w.innerHeight) n++; });
+        }catch(e){}
+        if((n===0&&Date.now()-t0>500)||Date.now()-t0>3500) res(); else setTimeout(look,120);
+      })();
+    });
   }
-  function placeSpot(){
-    if(!spotSel){ spot.classList.remove('on'); return; }
-    var d; try{ d=W().document; }catch(e){ return; }
-    var el=d.querySelector(spotSel); if(!el){ spot.classList.remove('on'); return; }
-    var r=el.getBoundingClientRect(), sw=stage.clientWidth, sh=stage.clientHeight, p=8;
-    var x=Math.max(6,r.left-p), y=Math.max(6,r.top-p), x2=Math.min(sw-6,r.right+p), y2=Math.min(sh-6,r.bottom+p);
-    if((x2-x)*(y2-y)>sw*sh*0.82||x2-x<20||y2-y<20){ spot.classList.remove('on'); return; }
-    spot.style.left=x+'px'; spot.style.top=y+'px'; spot.style.width=(x2-x)+'px'; spot.style.height=(y2-y)+'px'; spot.classList.add('on');
+  function place(ch,w){
+    if(!ch.top||!w) return;
+    try{ var d=w.document, x=d.querySelector(ch.top); if(!x) return; var hd=d.querySelector('.site-head');
+      w.scrollTo(0,x.getBoundingClientRect().top+w.pageYOffset-(hd?hd.offsetHeight:0)-(ch.off||24)); }catch(e){}
   }
-  function focus(sel){
-    spotSel=sel; spot.classList.remove('on');
-    if(!sel) return;
-    try{ var el=W().document.querySelector(sel); if(el&&!el.closest('.phone')&&!el.closest('.council')) el.scrollIntoView({behavior:'smooth',block:'center'}); }catch(e){}
-    clearInterval(spotT); setTimeout(placeSpot,550); spotT=setInterval(placeSpot,400);
+  /* load a step's page into a frame and get it ready, off screen */
+  function prepare(f,ch){
+    var url=pageOf(ch);
+    if(f.url===url&&f.p) return f.p;
+    var g=++f.gen; f.url=url;
+    f.p=new Promise(function(res){
+      f.el.onload=function(){
+        f.el.onload=null; if(g!==f.gen) return; var w=W(f);
+        Promise.resolve(w.document.fonts?w.document.fonts.ready:0).catch(function(){})
+          .then(function(){ if(g!==f.gen) return; return ch.prep?ch.prep(w,true):0; })
+          .then(function(){ if(g!==f.gen) return; place(ch,w); return settle(f); })
+          .then(function(){ if(g===f.gen) res(); });
+      };
+      f.el.src=bust(url);
+    });
+    return f.p;
   }
+  /* gentle crossfade: the new page fades in over the old one, never a blank flash */
+  function reveal(f){
+    var ni=F.indexOf(f), old=F[act];
+    f.p=null;
+    if(ni===act){ f.el.classList.add('on'); return; }
+    act=ni; f.el.classList.add('top'); f.el.classList.add('on');
+    setTimeout(function(){ if(F[act]!==old) old.el.classList.remove('on'); f.el.classList.remove('top'); },480);
+  }
+  function preloadNext(){
+    var n=CH[cur+1], my=seq; if(!n||n.cont) return;
+    setTimeout(function(){ if(my===seq) prepare(F[1-act],n); },1500);
+  }
+
+  /* ---------- moving between steps ---------- */
   function go(i){
-    clearTimeout(timer); cancelAnimationFrame(raf);
-    if(i>=B.length){ return finish(); }
-    cur=i; var b=B[i];
-    bars.forEach(function(x,k){ x.style.width=k<i?'100%':'0%'; });
-    caption(i);
-    var start=function(){
-      try{ if(b.run) b.run(W()); }catch(e){ console.warn('tour step',i,e); }
-      if(i===4) setTimeout(function(){ try{ demoId=W().NODEMO.id(); }catch(e){} },600);
-      focus(b.s);
-      left=b.d; startAt=performance.now(); if(!paused) tick();
-    };
-    var url=typeof b.u==='function'?b.u():b.u;
-    if(url) load(url,start); else start();
+    if(i<0) i=0;
+    if(i>=CH.length){ finish(); return; }
+    var from=ended?-1:cur, my=++seq, ch=CH[i], A=F[act], url=pageOf(ch);
+    if(hold){ hold=false; playing=false; shield.hidden=true; }  /* moving by hand during "Show me" keeps your own pace */
+    cur=i; ended=false; live=false; hold=false; okShown=false; el=0; ran=[];
+    $('#end').hidden=true; panel();
+    var bt=setTimeout(function(){ if(my===seq) $('#busy').hidden=false; },500);
+    function start(){ clearTimeout(bt); $('#busy').hidden=true; live=true; last=performance.now(); if(playing) runDue(); preloadNext(); }
+    if(ch.cont&&from===i-1&&samePage(A,url)){
+      Promise.resolve(ch.prep?ch.prep(W(A),false):0).then(function(){ if(my===seq) start(); });
+      return;
+    }
+    var S=F[1-act], gate=firstGo?introGate:null; firstGo=false;
+    Promise.all([prepare(S,ch),gate]).then(function(){
+      if(my!==seq) return;
+      place(ch,W(S)); reveal(S);
+      var intro=$('#intro'); if(!intro.hidden){ intro.classList.add('out'); setTimeout(function(){ intro.hidden=true; },480); }
+      start();
+    });
   }
-  function tick(){
-    clearTimeout(timer);
-    timer=setTimeout(function(){ go(cur+1); },left);
-    var b=B[cur], st=performance.now(), base=b.d-left;
-    (function frame(){ var el=base+(performance.now()-st); bars[cur].style.width=Math.min(100,el/b.d*100)+'%'; if(!paused&&el<b.d) raf=requestAnimationFrame(frame); })();
-    startAt=st;
-  }
-  function pause(p){
-    paused=p; $('#t-pause').textContent=p?'Play':'Pause'; $('#shield').hidden=p; document.body.classList.toggle('t-paused',p);
-    if(p){ clearTimeout(timer); cancelAnimationFrame(raf); left=Math.max(300,left-(performance.now()-startAt)); }
-    else tick();
-  }
+  function next(){ if(!ended) go(cur+1); }
+  function back(){ if(ended) go(CH.length-1); else go(Math.max(0,cur-1)); }
   function finish(){
-    clearInterval(spotT); spot.classList.remove('on'); bars.forEach(function(x){x.style.width='100%';});
-    $('#end').hidden=false; $('#t-n').textContent='Done'; $('#t-h').textContent='That\'s the whole thing.'; $('#t-p').textContent='Watch again, read the one-page business case, or try the app yourself.';
+    ++seq; ended=true; live=false; cur=CH.length;
+    setPlaying(false); panel();
+    var e=$('#end'); e.classList.remove('out'); e.hidden=false;
   }
-  $('#t-pause').onclick=function(){ pause(!paused); };
-  $('#t-next').onclick=function(){ if(paused) pause(false); go(cur+1); };
-  $('#again').onclick=function(){ $('#end').hidden=true; loaded=''; go(0); };
+
+  /* ---------- the clock: only runs while playing ---------- */
+  function runDue(){
+    var ch=CH[cur], w=W(F[act]);
+    (ch.subs||[]).forEach(function(s,k){ if(!ran[k]&&el>=s[0]){ ran[k]=true; try{ if(s[2]) s[2](w); }catch(e){ console.warn('tour step',cur,k,e); } lines(); } });
+  }
+  function loop(t){
+    requestAnimationFrame(loop);
+    var dt=Math.min(250,t-last); last=t;
+    if(!live||ended) return;
+    var ch=CH[cur], w=W(F[act]);
+    if(playing){ el+=dt; runDue(); }
+    var pg=$('#list .is-on .pg b'); if(pg) pg.style.width=Math.min(100,el/ch.d*100)+'%';
+    if(t-chk>400){ chk=t;
+      if(cur<=2){ try{ var id=w.NODEMO.id(); if(id) demoId=id; }catch(e){} }
+      if(!playing&&ch.done&&!okShown){ var ok=false; try{ ok=ch.done(w); }catch(e){} if(ok){ okShown=true; if(ch.after) ch.after(w); turn(); } }
+    }
+    if(playing&&hold&&ch.subs&&ran.length===ch.subs.length&&ran.every(Boolean)&&el>=ch.subs[ch.subs.length-1][0]+2600){ hold=false; setPlaying(false); return; }
+    if(playing&&el>=ch.d){ if(hold){ hold=false; setPlaying(false); } else next(); }
+  }
+  requestAnimationFrame(loop);
+
+  function setPlaying(p){
+    playing=p; shield.hidden=!p; last=performance.now();
+    $('#b-play').textContent=ended?'Watch again':p?'Pause':'Play';
+    mode(); turn();
+  }
+
+  /* ---------- the side panel ---------- */
+  function mode(){ $('#mode').textContent=ended?'':playing?'Playing':'Your pace'; }
+  function panel(){
+    var ch=CH[cur], n=ended?'Done':(cur+1)+' / '+CH.length;
+    $('#num').textContent=n; $('#count').textContent=n;
+    $('#h').textContent=ended?END.h:ch.h; $('#lead').textContent=ended?END.lead:ch.lead;
+    $('#b-back').disabled=false; $('#b-next').disabled=ended;
+    $('#b-play').textContent=ended?'Watch again':playing?'Pause':'Play';
+    mode(); list(); lines(); turn();
+  }
+  function lines(){
+    var ch=CH[cur], ul=$('#lines');
+    if(ended||!ch||!ch.subs){ ul.innerHTML=''; nowText(); return; }
+    var at=-1; ran.forEach(function(v,k){ if(v) at=k; });
+    ul.innerHTML=ch.subs.map(function(s,k){ return '<li class="'+(k<at?'is-done':k===at?'is-on':'')+'"><i></i><span>'+esc(s[1])+'</span></li>'; }).join('');
+    nowText();
+  }
+  function nowText(){
+    var ch=CH[cur], t;
+    if(!ch&&!ended) return;
+    if(ended) t='Tap <b>Click through it yourself</b> to go at your own pace.';
+    else if(!playing) t=okShown?'<b>Done.</b> Tap Next when you\'re ready.':(ch.m||esc(ch.lead));
+    else { var at=-1; ran.forEach(function(v,k){ if(v) at=k; }); t=ch.subs&&at>-1?esc(ch.subs[at][1]):esc(ch.lead); }
+    $('#now').innerHTML=t;
+  }
+  function turn(){
+    var t=$('#turn'), ch=CH[cur];
+    if(playing||ended||!ch){ t.hidden=true; $('#lines').hidden=false; nowText(); return; }
+    $('#lines').hidden=true; t.hidden=false;
+    var show=ch.subs&&ch.subs.some(function(s,k){ return s[2]&&!ran[k]; });
+    t.innerHTML='<b>Your turn</b>'+(okShown?'<p class="ok"><b>Done.</b> Press Next when you\'re ready.</p>':
+      '<ol>'+ch.guide.map(function(g){ return '<li><span>'+g+'</span></li>'; }).join('')+'</ol>'+(show?'<button class="tv-show" type="button" id="show">Show me instead</button>':''));
+    nowText();
+  }
+  function list(){
+    $('#list').innerHTML=CH.map(function(c,k){
+      return '<li><button type="button" data-i="'+k+'" class="'+(ended||k<cur?'is-done':k===cur?'is-on':'')+'"><span class="n">'+(k<9?'0':'')+(k+1)+'</span><span>'+esc(c.short)+'</span><i class="pg"><b></b></i></button></li>';
+    }).join('')+'<li><button type="button" data-i="end" class="'+(ended?'is-on':'')+'"><span class="n">0'+(CH.length+1)+'</span><span>The call</span></button></li>';
+  }
+
+  /* ---------- controls ---------- */
+  $('#b-back').innerHTML=I('back')+'Back';
+  $('#b-next').innerHTML='Next'+I('right');
+  $('#b-back').onclick=back;
+  $('#b-next').onclick=next;
+  $('#b-play').onclick=function(){ if(ended){ playing=true; go(0); setPlaying(true); } else setPlaying(!playing); };
+  shield.onclick=function(){ setPlaying(false); };
+  $('#turn').addEventListener('click',function(e){ if(e.target.closest('#show')){ hold=true; setPlaying(true); } });
+  $('#list').onclick=function(e){ var b=e.target.closest('[data-i]'); if(!b) return; if(b.dataset.i==='end') finish(); else go(+b.dataset.i); };
+  $('#e-self').onclick=function(){ playing=false; go(0); setPlaying(false); };
+  $('#e-again').onclick=function(){ playing=true; go(0); setPlaying(true); };
   document.addEventListener('keydown',function(e){
-    if(e.key===' '){ e.preventDefault(); pause(!paused); }
-    if(e.key==='ArrowRight') $('#t-next').click();
-    if(e.key==='Escape') location.href='index.html';
+    if(e.target.closest&&e.target.closest('input,textarea,select')) return;
+    if(e.key==='ArrowRight'){ e.preventDefault(); next(); }
+    if(e.key==='ArrowLeft'){ e.preventDefault(); back(); }
+    if(e.key===' '&&!ended){ e.preventDefault(); setPlaying(!playing); }
   });
-  window.addEventListener('resize',placeSpot);
-  go(0);
+  /* warm the photo and the map tiles the demo uses, so they open already drawn */
+  [[600,600],[500,400],[1200,900],[200,170]].forEach(function(z){ var im=new Image(); im.src=NO.img(NO.SAMPLE_PHOTO,z[0],z[1]); });
+  NO.warm(SPOT[0],SPOT[1],18,2); NO.warm(SPOT[0],SPOT[1],17,2); NO.warm(SPOT[0],SPOT[1],16,2);
+  window.addEventListener('resize',fit);
+  fit(); setPlaying(true); go(0);
 })();
 </script>
 </body>
