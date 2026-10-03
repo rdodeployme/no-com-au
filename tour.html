@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;700;800;900&family=Overpass+Mono:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="no.css?v=1791040865">
+<link rel="stylesheet" href="no.css?v=1791041412">
 </head>
 <body class="page-tour">
 <div class="tour">
@@ -48,12 +48,13 @@
     <div id="t-txt"><h2 id="t-h"></h2><p id="t-p"></p></div>
   </footer>
 </div>
-<script src="no.js?v=1791040865"></script>
+<script src="no.js?v=1791041412"></script>
 <script>
 (function(){
   var $=NO.$, tf=$('#tf'), stage=$('#stage'), spot=$('#spot');
   var demoId=null, cur=-1, timer=null, startAt=0, left=0, paused=false, raf=null, spotSel=null, spotT=null, loaded='';
   var mob=window.matchMedia('(max-width:860px)').matches;
+  var TV=Date.now().toString(36);
   var W=function(){ return tf.contentWindow; };
   var B=[
     {u:'index.html',h:'Report dumped rubbish in three taps.',p:'Free for residents. Councils act from one email. Our crews collect it and recycle it.',s:'.hero h1',d:6000},
@@ -86,7 +87,8 @@
     var path=url.split('#')[0];
     if(loaded===url){ cb(); return; }
     if(loaded.split('#')[0]===path && url.indexOf('#')>-1 && path!=='r.html'){ try{ W().location.hash=url.split('#')[1]; }catch(e){} loaded=url; setTimeout(cb,300); return; }
-    loaded=url; tf.onload=function(){ tf.onload=null; setTimeout(cb,mob?700:600); }; tf.src=url;
+    var q=url.split('#'), full=q[0]+(q[0].indexOf('?')>-1?'&':'?')+'tv='+TV+(q[1]?'#'+q[1]:'');
+    loaded=url; tf.onload=function(){ tf.onload=null; setTimeout(cb,mob?700:600); }; tf.src=full;
   }
   function placeSpot(){
     if(!spotSel){ spot.classList.remove('on'); return; }
