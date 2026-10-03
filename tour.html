@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;700;800;900&family=Overpass+Mono:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="no.css?v=1791046749">
+<link rel="stylesheet" href="no.css?v=1791047318">
 </head>
 <body class="page-tour">
 <div class="tv">
@@ -62,7 +62,7 @@
     </div>
   </div>
 </div>
-<script src="no.js?v=1791046749"></script>
+<script src="no.js?v=1791047318"></script>
 <script>
 (function(){
   var $=NO.$, $$=NO.$$, I=NO.icon, esc=NO.esc;
@@ -111,7 +111,8 @@
   var cur=-1, seq=0, playing=true, live=false, ended=false, hold=false, okShown=false, el=0, last=0, ran=[], chk=0;
   var introGate=new Promise(function(r){ setTimeout(r,2800); }), firstGo=true;
   function W(f){ try{ return f.el.contentWindow; }catch(e){ return null; } }
-  function pageOf(ch){ return typeof ch.page==='function'?ch.page():ch.page; }
+  function grabId(){ try{ var id=W(F[act]).NODEMO.id(); if(id) demoId=id; }catch(e){} }
+  function pageOf(ch){ grabId(); return typeof ch.page==='function'?ch.page():ch.page; }
   function bust(u){ var q=u.split('#'); return q[0]+(q[0].indexOf('?')>-1?'&':'?')+'tv='+TV+'.'+(++loads)+(q[1]?'#'+q[1]:''); }
   function samePage(f,url){ try{ return f.url===url && (W(f).location.pathname.split('/').pop()||'index.html')===url.split(/[?#]/)[0]; }catch(e){ return false; } }
 
