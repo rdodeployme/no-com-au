@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;700;800;900&family=Overpass+Mono:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css"><link rel="stylesheet" href="no.css?v=1791040865">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css"><link rel="stylesheet" href="no.css?v=1791041104">
 </head>
 <body class="page-report">
 <header class="rp-head">
@@ -134,7 +134,7 @@
   <div class="scrim" id="scrim" hidden></div>
 </main>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-<script src="no.js?v=1791040865"></script>
+<script src="no.js?v=1791041104"></script>
 <script>
 (function(){
   var $=NO.$, $$=NO.$$, I=NO.icon, esc=NO.esc;
@@ -445,12 +445,23 @@
     begin:function(){ demo=true; NO.store.purge(function(r){return r.demo;}); },
     photo:function(){ R.photos=['1703296958227-d01823347876']; shots(); foot(); },
     step:function(n){ show(n); },
-    pin:function(lat,lon){ initMap(); setTimeout(function(){ map.flyTo([lat,lon],18,{duration:1.8}); },250); },
+    pin:function(lat,lon){
+      initMap();
+      setTimeout(function(){ if(document.hidden) map.setView([lat,lon],18,{animate:false}); else map.flyTo([lat,lon],18,{duration:1.8}); },250);
+      setTimeout(function(){ var c=map.getCenter(); if(NO.dist(c.lat,c.lng,lat,lon)>40||map.getZoom()<18){ map.stop(); map.setView([lat,lon],18,{animate:false}); onMove(); } },2600);
+      NO.lookup(lat,lon);
+    },
     pick:function(types,size){
       types.forEach(function(t,i){ setTimeout(function(){ var b=$('#tiles [data-t="'+t+'"]'); if(b&&b.getAttribute('aria-pressed')!=='true') b.click(); },i*450); });
       if(size) setTimeout(function(){ var s=$('#sizes [data-v="'+size+'"]'); if(s&&s.getAttribute('aria-pressed')!=='true') s.click(); },types.length*450+250);
     },
-    send:function(){ if(!center&&map){ var c=map.getCenter(); center={lat:c.lat,lon:c.lng}; } if(!R.types.length) R.types=['couch']; send(); },
+    send:function(){
+      if(map){ var c=map.getCenter(); center={lat:c.lat,lon:c.lng}; }
+      if(!R.types.length) R.types=['couch'];
+      if(place&&!looking){ send(); return; }
+      var done=false, go=function(p){ if(done) return; done=true; if(p&&p.ok) place=p; looking=false; send(); };
+      NO.lookup(center.lat,center.lon).then(go); setTimeout(function(){ go(null); },2500);
+    },
     sheet:function(o){ if(window.matchMedia('(max-width:860px)').matches){ sheet(o); if(o) setTimeout(function(){ if(mmap) mmap.invalidateSize(); },320); } },
     ack:function(){ var b=$('#a-ack'); if(b&&!b.disabled) b.click(); },
     book:function(){ var b=$('#a-book'); if(b&&!b.disabled){ b.click(); setTimeout(function(){ var x=$('[data-book="Recycle Group crew"]'); if(x) x.click(); },600); } },
