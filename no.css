@@ -20,11 +20,13 @@ h1,h2,h3,h4{font-family:var(--f);font-weight:900;letter-spacing:-.025em;line-hei
 ::selection{background:var(--red);color:#fff}
 :focus-visible{outline:3px solid var(--ink);outline-offset:2px}
 
-/* logo: the o is a no-dumping ring with a clock hand */
-.logo{display:inline-flex;align-items:baseline;font:900 36px/1 var(--f);letter-spacing:-.05em;color:var(--ink);text-decoration:none;white-space:nowrap}
-.logo .o{display:inline-block;position:relative;width:.6em;height:.6em;border:.125em solid var(--red);border-radius:50%;margin:0 .025em 0 .035em}
-.logo .o::after{content:"";position:absolute;left:50%;top:50%;width:.07em;height:.16em;margin-left:-.035em;background:currentColor;border-radius:2px;transform-origin:50% 0;transform:rotate(180deg);animation:tick 60s steps(60) infinite}
-.logo small{font:800 .36em/1 var(--f);letter-spacing:0;color:var(--ink3);margin-left:.18em}
+/* logo: "no more dumping" - the o of "no" is a clock face whose hand keeps ticking; www.no.com.au underneath */
+.logo{display:inline-flex;flex-direction:column;align-items:flex-start;font:900 36px/1 var(--f);letter-spacing:-.05em;color:var(--ink);text-decoration:none;white-space:nowrap}
+.logo .lt{display:inline-flex;align-items:baseline;font-size:.74em}
+.logo .o{display:inline-block;position:relative;box-sizing:border-box;width:.74em;height:.74em;border:.075em solid currentColor;border-radius:50%;margin:0 .03em 0 .035em;align-self:center;background:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><g fill='%23141414' font-family='Arial,Helvetica,sans-serif' font-weight='800' font-size='17' text-anchor='middle' dominant-baseline='central'><text x='50.0' y='13.0'>12</text><text x='68.5' y='18.0'>1</text><text x='82.0' y='31.5'>2</text><text x='87.0' y='50.0'>3</text><text x='82.0' y='68.5'>4</text><text x='68.5' y='82.0'>5</text><text x='50.0' y='87.0'>6</text><text x='31.5' y='82.0'>7</text><text x='18.0' y='68.5'>8</text><text x='13.0' y='50.0'>9</text><text x='18.0' y='31.5'>10</text><text x='31.5' y='18.0'>11</text></g></svg>") center/100% 100% no-repeat}
+.logo.inv .o{background-image:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><g fill='%23ffffff' font-family='Arial,Helvetica,sans-serif' font-weight='800' font-size='17' text-anchor='middle' dominant-baseline='central'><text x='50.0' y='13.0'>12</text><text x='68.5' y='18.0'>1</text><text x='82.0' y='31.5'>2</text><text x='87.0' y='50.0'>3</text><text x='82.0' y='68.5'>4</text><text x='68.5' y='82.0'>5</text><text x='50.0' y='87.0'>6</text><text x='31.5' y='82.0'>7</text><text x='18.0' y='68.5'>8</text><text x='13.0' y='50.0'>9</text><text x='18.0' y='31.5'>10</text><text x='31.5' y='18.0'>11</text></g></svg>")}
+.logo .o::after{content:"";position:absolute;left:50%;top:50%;width:.06em;height:.24em;margin-left:-.03em;background:currentColor;border-radius:2px;transform-origin:50% 0;transform:rotate(180deg);animation:tick 20s steps(60) infinite}
+.logo small{font:800 .3em/1 var(--f);letter-spacing:.02em;color:var(--ink3);margin:.4em 0 0 .06em}
 .logo.inv{color:#fff}.logo.inv small{color:#9b9a95}
 @keyframes tick{to{transform:rotate(540deg)}}
 
@@ -254,6 +256,10 @@ textarea.in{height:auto;min-height:90px;padding:12px 14px;line-height:1.45;resiz
   .foot-grid{grid-template-columns:1fr 1fr}
   .foot-grid>div:first-child{grid-column:1/-1}
 }
+@media (min-width:861px) and (max-width:960px){
+  /* keep the nav links on one line beside the longer wordmark */
+  .site-head .logo{font-size:clamp(25px,calc((100vw - 720px) * .18),36px)}
+}
 @media (max-width:860px){
   .site-head nav{display:none}
   .menu-btn{display:inline-flex}
@@ -268,6 +274,9 @@ textarea.in{height:auto;min-height:90px;padding:12px 14px;line-height:1.45;resiz
   .site-head .bar{height:62px;gap:12px}
   .menu-open .site-head nav{top:62px}
   .logo{font-size:32px}
+  /* the longer "no more dumping" wordmark scales with the screen so the header still fits beside the button and menu */
+  .site-head .logo{font-size:clamp(18px,calc((100vw - 250px) / 5.5),32px)}
+  .site-head .logo small{font-size:max(.3em,9px)}
   .sec{padding:72px 0}
   .sec.tight{padding:56px 0}
   .hero{padding:28px 0 64px}
@@ -294,6 +303,10 @@ textarea.in{height:auto;min-height:90px;padding:12px 14px;line-height:1.45;resiz
   .faq summary{font-size:18px}
   .foot-grid{grid-template-columns:1fr}
   .receipt{max-width:none}
+}
+@media (max-width:359px){
+  .site-head .bar{gap:8px}
+  .site-head .bar>.btn{padding:3px 11px 0;font-size:14px}
 }
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 @media print{.site-head,.site-foot,.no-print{display:none!important}body{background:#fff}}
@@ -632,7 +645,7 @@ textarea.in{height:auto;min-height:90px;padding:12px 14px;line-height:1.45;resiz
 .sign{width:min(100%,420px);margin:0 auto;background:#fff;border:10px solid var(--ink);border-radius:18px;padding:26px 26px 24px;text-align:center;box-shadow:0 40px 60px -40px rgba(0,0,0,.6);position:relative}
 .sign::before,.sign::after{content:"";position:absolute;top:10px;width:10px;height:10px;border-radius:50%;background:#bbb;box-shadow:inset 0 0 0 2px #888}
 .sign::before{left:10px}.sign::after{right:10px}
-.sign .logo{font-size:74px}
+.sign .logo{font-size:52px}
 .sign h4{font:900 34px/1 var(--f);letter-spacing:-.03em;margin:16px 0 10px}
 .sign p{font-weight:700;font-size:17px;line-height:1.35}
 .sign .qr{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:18px;text-align:left}
@@ -682,7 +695,7 @@ textarea.in{height:auto;min-height:90px;padding:12px 14px;line-height:1.45;resiz
   .irow .t .mono{margin:0}
   .who{grid-template-columns:1fr}
   .sign{border-width:8px;padding:22px 18px}
-  .sign .logo{font-size:60px}
+  .sign .logo{font-size:42px}
   .pilot li{grid-template-columns:1fr;gap:6px}
 }
 
