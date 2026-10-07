@@ -3,16 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Console · no.com.au</title>
-<meta name="description" content="The no.com.au console for councils and land managers: inbox, map, hotspots and monthly reports.">
+<title>Console · No More Dumping</title>
+<meta name="description" content="The No More Dumping console for councils and land managers: inbox, map, hotspots and monthly reports.">
 <meta name="robots" content="noindex"><meta name="theme-color" content="#F4F3EF">
-<meta property="og:title" content="Console · no.com.au">
-<meta property="og:description" content="The no.com.au console for councils and land managers: inbox, map, hotspots and monthly reports.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='11.5' fill='white' stroke='%23D8261C' stroke-width='6'/%3E%3Cpath d='M16 16V9.5' stroke='%23141414' stroke-width='3.2' stroke-linecap='round'/%3E%3C/svg%3E">
+<meta property="og:title" content="Console · No More Dumping">
+<meta property="og:description" content="The No More Dumping console for councils and land managers: inbox, map, hotspots and monthly reports.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='white' stroke='%23141414' stroke-width='3.4'/%3E%3Cpath d='M16 6.4v2.4M25.6 16h-2.4M16 25.6v-2.4M6.4 16h2.4' stroke='%23141414' stroke-width='2' stroke-linecap='round'/%3E%3Cpath d='M16 16l4.4-5.8' stroke='%23141414' stroke-width='3' stroke-linecap='round'/%3E%3Ccircle cx='16' cy='16' r='2.1' fill='%23141414'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;700;800;900&family=Overpass+Mono:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css"><link rel="stylesheet" href="no.css?v=1791047319">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css"><link rel="stylesheet" href="no.css?v=1791047400">
 </head>
 <body class="page-console">
 <div class="cn">
@@ -56,7 +56,7 @@
 </div>
 <div class="ev-wrap" id="ev" hidden></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-<script src="no.js?v=1791047318"></script>
+<script src="no.js?v=1791047400"></script>
 <script>
 (function(){
   var $=NO.$, $$=NO.$$, I=NO.icon, esc=NO.esc;
@@ -71,13 +71,13 @@
     var week=done.filter(function(r){return Date.now()-NO.collectedAt(r)<7*NO.D;});
     var dur=done.map(function(r){return NO.collectedAt(r)-r.created;});
     var ontime=done.filter(function(r){return NO.collectedAt(r)<=NO.due(r.created);}).length;
-    var kg=0,rec=0; done.forEach(function(r){ var x=NO.receipt(r.items||NO.defaultItems(r.types)); kg+=x.tot.kg; rec+=x.tot.steel+x.tot.timber; });
-    return {open:open,late:late,done:done,week:week,med:NO.median(dur),rate:done.length?Math.round(ontime/done.length*100):0,kg:kg,rec:rec};
+    var kg=0,rec=0,m3=0; done.forEach(function(r){ var x=NO.receipt(r.items||NO.defaultItems(r.types)); kg+=x.tot.kg; m3+=x.tot.m3; rec+=x.tot.steel+x.tot.timber; });
+    return {open:open,late:late,done:done,week:week,med:NO.median(dur),rate:done.length?Math.round(ontime/done.length*100):0,kg:kg,rec:rec,m3:Math.round(m3*10)/10};
   }
   function kpis(){
     var s=stats(all());
     $('#n-open').textContent=s.open.length;
-    $('#kp').innerHTML=[[s.open.length,'Open now'],[s.late.length,'Overdue',s.late.length?'bad':''],[s.week.length,'Collected, 7 days'],[s.med?NO.human(s.med).replace(/ \d+m$/,''):'-','Median time to collect'],[s.rate+'%','Collected by the next working day'],[s.rec+' kg','Steel and timber recovered']]
+    $('#kp').innerHTML=[[s.open.length,'Open now'],[s.late.length,'Overdue',s.late.length?'bad':''],[s.week.length,'Collected, 7 days'],[s.med?NO.human(s.med).replace(/ \d+m$/,''):'-','Median time to collect'],[s.rate+'%','Collected by the next working day'],[NO.m3(s.m3),'Landfill space saved']]
       .map(function(k){return '<div class="k '+(k[2]||'')+'"><b>'+k[0]+'</b><span>'+k[1]+'</span></div>';}).join('');
   }
 
@@ -182,7 +182,7 @@
       '<dl class="ev-dl"><dt>Reported</dt><dd>'+esc(new Date(r.created).toLocaleString('en-AU'))+'</dd><dt>Location</dt><dd>'+esc([r.place,r.suburb].filter(Boolean).join(', '))+'<br>'+r.lat.toFixed(6)+', '+r.lon.toFixed(6)+'</dd>'+
       '<dt>Responsible</dt><dd>'+esc(r.to)+' ('+esc((r.why||'').toLowerCase())+')</dd><dt>What</dt><dd>'+esc(NO.typeList(r.types))+'</dd><dt>How much</dt><dd>'+esc(r.size?NO.S[r.size].label:'Not given')+'</dd><dt>Turned up</dt><dd>'+esc(r.seen||'Not sure')+'</dd>'+
       '<dt>Vehicle rego</dt><dd>'+(r.rego?esc(r.rego):'None given')+'</dd><dt>Other reports</dt><dd>'+r.events.filter(function(e){return e.k==='confirmed';}).reduce(function(a,e){return a+e.n;},0)+' more people reported the same pile</dd>'+
-      '<dt>Reporter</dt><dd>Contact details are held by no.com.au and released to authorised officers on request.</dd></dl>'+
+      '<dt>Reporter</dt><dd>Contact details are held by No More Dumping and released to authorised officers on request.</dd></dl>'+
       '<h3>Timeline</h3><ol class="tl">'+r.events.slice().sort(function(a,b){return a.t-b.t;}).map(function(e){return '<li class="on"><i></i><div>'+esc(NO.eventText(e,r))+'</div><span>'+esc(new Date(e.t).toLocaleString('en-AU',{day:'numeric',month:'short',hour:'numeric',minute:'2-digit'}))+'</span></li>';}).join('')+'</ol></div></div>';
     ev.hidden=false; document.body.classList.add('ev-on');
     $('#ev-close').onclick=function(){ ev.hidden=true; document.body.classList.remove('ev-on'); };
@@ -233,7 +233,7 @@
       '<div class="doc-kpis"><div><b>'+list.length+'</b><span>Reports received</span></div><div><b>'+s.done.length+'</b><span>Collected</span></div><div><b>'+(s.med?NO.human(s.med):'-')+'</b><span>Median time to collect</span></div><div><b>'+s.rate+'%</b><span>Collected by the next working day</span></div></div>'+
       '<h3>What was reported</h3><table><thead><tr><th>Item</th><th>Reports</th><th>What happens to it</th><th>Where it goes</th></tr></thead><tbody>'+rows+'</tbody></table>'+
       '<h3>Who it went to</h3><table><thead><tr><th>Responsible</th><th>Reports</th></tr></thead><tbody>'+ownRows+'</tbody></table>'+
-      '<h3>Recovery</h3><p>Weighed items collected: <b>'+s.kg+' kg</b>. Steel and timber recovered from them: <b>'+s.rec+' kg</b>. Weights use The Mattress Recycling Company\'s per-item figures for mattresses and couches. Other streams are counted, not weighed, in this prototype.</p>'+
+      '<h3>Recovery</h3><div class="doc-big"><b>'+NO.m3(s.m3)+'</b><span>of landfill space saved, about the same as <strong>'+NO.bins(s.m3)+'</strong></span></div><p>Mattresses and couches collected: <b>'+s.kg+' kg</b>. Steel and timber recovered from them: <b>'+s.rec+' kg</b>. Weights and volumes use The Mattress Recycling Company\'s per-item figures. Other streams are counted, not weighed, in this prototype.</p>'+
       '<h3>Repeat sites</h3><p>See the Hotspots tab for sites reported more than once, with suggested actions.</p>'+
       '<p class="small" style="margin-top:28px">Prototype report built from sample data. In the live version, figures come from crew weighbridge dockets and recovery records, and can feed Yarta for your environmental reporting.</p>';
   }

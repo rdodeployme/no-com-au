@@ -1,4 +1,4 @@
-/* no.com.au prototype: shared data, store and helpers */
+/* No More Dumping (no.com.au) prototype: shared data, store and helpers */
 (function () {
   "use strict";
   var NO = (window.NO = {});
@@ -218,8 +218,8 @@
 
   /* ---------- recovery: what happens to each thing ---------- */
   NO.TMRC = {
-    mattress: { single: { kg: 25, steel: 0.71, label: "Single" }, queen: { kg: 66, steel: 0.72, label: "Double or queen" }, king: { kg: 78, steel: 0.70, label: "King" } },
-    couch: { "1": { kg: 40, steel: 0.25, timber: 0.30, label: "1 seater" }, "2": { kg: 55, steel: 0.1091, timber: 0.40, label: "2 seater" }, "3": { kg: 70, steel: 0.1143, timber: 0.40, label: "3 seater" } }
+    mattress: { single: { kg: 25, m3: 0.4, steel: 0.71, label: "Single" }, queen: { kg: 66, m3: 0.8, steel: 0.72, label: "Double or queen" }, king: { kg: 78, m3: 1.1, steel: 0.70, label: "King" } },
+    couch: { "1": { kg: 40, m3: 0.5, steel: 0.25, timber: 0.30, label: "1 seater" }, "2": { kg: 55, m3: 1.5, steel: 0.1091, timber: 0.40, label: "2 seater" }, "3": { kg: 70, m3: 2.4, steel: 0.1143, timber: 0.40, label: "3 seater" } }
   };
   NO.FATE = {
     mattress: { how: "Recycled", where: "The Mattress Recycling Company", note: "Steel, foam and fabric separated" },
@@ -243,34 +243,38 @@
     });
   };
   NO.receipt = function (items) {
-    var tot = { kg: 0, steel: 0, timber: 0 };
+    var tot = { kg: 0, m3: 0, steel: 0, timber: 0 };
     var lines = (items || []).map(function (it) {
       var f = NO.FATE[it.t] || NO.FATE.other, T = NO.T[it.t] || {}, L = { t: it.t, qty: it.qty || 1, how: f.how, where: f.where, note: f.note, label: T.short || T.label || it.t };
       var spec = NO.TMRC[it.t] && NO.TMRC[it.t][it.size];
       if (spec) {
         L.label = spec.label + (it.t === "mattress" ? " mattress" : " couch");
-        L.kg = spec.kg * L.qty; L.steel = Math.round(spec.kg * spec.steel * L.qty); L.timber = Math.round(spec.kg * (spec.timber || 0) * L.qty);
-        tot.kg += L.kg; tot.steel += L.steel; tot.timber += L.timber;
+        L.kg = spec.kg * L.qty; L.m3 = Math.round(spec.m3 * L.qty * 10) / 10; L.steel = Math.round(spec.kg * spec.steel * L.qty); L.timber = Math.round(spec.kg * (spec.timber || 0) * L.qty);
+        tot.kg += L.kg; tot.m3 = Math.round((tot.m3 + L.m3) * 10) / 10; tot.steel += L.steel; tot.timber += L.timber;
       }
       return L;
     });
     return { lines: lines, tot: tot };
   };
+  /* landfill space, set against something everyone has seen: a 240 litre wheelie bin */
+  var round3 = function (n) { var k = n >= 10000 ? 1000 : n >= 1000 ? 100 : n >= 100 ? 10 : 1; return Math.round(n / k) * k; };
+  NO.m3 = function (v) { return (v >= 100 ? round3(v) : Math.round(v * 10) / 10).toLocaleString("en-AU") + " m\u00b3"; };
+  NO.bins = function (v) { var n = round3(Math.round(v / 0.24)); return n.toLocaleString("en-AU") + " wheelie bin" + (n === 1 ? "" : "s"); };
   NO.receiptHTML = function (r, opts) {
     opts = opts || {};
     var rc = NO.receipt(r.items || NO.defaultItems(r.types)), c = NO.collectedAt(r);
     var rows = rc.lines.map(function (L) {
-      var w = L.kg ? '<div class="rc-row sub"><span>' + L.kg + " kg</span><span>" + (L.steel ? "steel " + L.steel + " kg" : "") + (L.timber ? ", timber " + L.timber + " kg" : "") + "</span></div>" : "";
+      var w = L.kg ? '<div class="rc-row sub"><span>' + L.kg + " kg, " + NO.m3(L.m3) + "</span><span>" + (L.steel ? "steel " + L.steel + " kg" : "") + (L.timber ? ", timber " + L.timber + " kg" : "") + "</span></div>" : "";
       return '<div class="rc-row"><span>' + (L.qty > 1 ? L.qty + " × " : "") + NO.esc(L.label) + "</span><b>" + NO.esc(L.how) + "</b></div>" + w +
         '<div class="rc-row sub"><span>' + NO.esc(L.where) + "</span></div>" + (L.note ? '<div class="rc-note">' + NO.esc(L.note) + "</div>" : "");
     }).join('<hr class="rc-hr">');
-    var tot = rc.tot.kg ? '<hr class="rc-hr dbl"><div class="rc-row tot"><span>Weighed items</span><b>' + rc.tot.kg + ' kg</b></div><div class="rc-row tot"><span>Steel and timber recovered</span><b>' + (rc.tot.steel + rc.tot.timber) + " kg</b></div>" : "";
-    return '<div class="receipt' + (opts.cls ? " " + opts.cls : "") + '"><div class="rc-head"><div class="rc-logo">no.com.au</div><div>RECOVERY RECEIPT</div></div>' +
+    var tot = rc.tot.kg ? '<hr class="rc-hr dbl"><div class="rc-row tot"><span>Landfill space saved</span><b>' + NO.m3(rc.tot.m3) + '</b></div><div class="rc-row sub"><span>About the same as</span><span>' + NO.bins(rc.tot.m3) + '</span></div><div class="rc-row tot"><span>Steel and timber recovered</span><b>' + (rc.tot.steel + rc.tot.timber) + " kg</b></div>" : "";
+    return '<div class="receipt' + (opts.cls ? " " + opts.cls : "") + '"><div class="rc-head"><div class="rc-logo">no more dumping</div><div>RECOVERY RECEIPT</div></div>' +
       '<div class="rc-row sub"><span>' + NO.esc(r.id) + "</span><span>" + NO.esc(r.suburb || "") + "</span></div>" +
       '<div class="rc-row sub"><span>Collected</span><span>' + (c ? NO.when(c) : "Not yet") + "</span></div>" +
       '<div class="rc-row sub"><span>Time on the street</span><span>' + (c ? NO.human(c - r.created) : NO.human(Date.now() - r.created)) + "</span></div>" +
       '<hr class="rc-hr dbl">' + rows + tot +
-      '<div class="rc-foot">' + (rc.tot.kg ? "Weights use The Mattress Recycling Company's per-item figures. " : "") + "Thanks for reporting it.</div></div>";
+      '<div class="rc-foot">' + (rc.tot.kg ? "Weights and volumes use The Mattress Recycling Company's per-item figures. " : "") + "Thanks for reporting it.</div></div>";
   };
 
   /* ---------- report state ---------- */
@@ -346,7 +350,17 @@
       items: [{ t: "mattress", size: "queen", qty: 2 }, { t: "bags", qty: 1 }] },
     { id: "NO-24749", age: 6 * D + 2 * H, suburb: "Chermside QLD", state: "QLD", lga: "Brisbane", kind: "council", lat: -27.3855, lon: 153.0306, place: "Beside the bins",
       types: ["couch"], size: "few", photo: "1722461073223-d2f5356e7c43", alt: "An armchair left beside wheelie bins", seen: "Today",
-      flow: [["ack", 3 * H], ["collected", 28 * H, { by: "Council crew" }]], items: [{ t: "couch", size: "1", qty: 1 }] }
+      flow: [["ack", 3 * H], ["collected", 28 * H, { by: "Council crew" }]], items: [{ t: "couch", size: "1", qty: 1 }] },
+    { id: "NO-24814", age: 2 * H + 35 * M, suburb: "Altona North VIC", state: "VIC", lga: "Hobsons Bay", kind: "council", lat: -37.8379, lon: 144.8441, place: "Laneway behind houses",
+      types: ["mattress", "bags"], size: "boot", photo: "1592890278983-18616401d4ed", alt: "Bags and rubbish piled by a fence", seen: "Today", flow: [] },
+    { id: "NO-24793", age: 2 * D + 5 * H, suburb: "Laverton VIC", state: "VIC", lga: "Hobsons Bay", kind: "council", lat: -37.8618, lon: 144.7712, place: "Industrial estate verge",
+      types: ["rubble", "boxes"], size: "trailer", photo: "1773614359232-8eef10578150", alt: "A pile of broken concrete", seen: "This week",
+      flow: [["ack", 2 * H], ["scheduled", 3 * H, { crew: "Recycle Group crew" }], ["collected", 20 * H, { by: "Recycle Group crew" }]], items: [{ t: "rubble", qty: 1 }, { t: "boxes", qty: 1 }] },
+    { id: "NO-24809", age: 6 * H + 50 * M, suburb: "Creswick VIC", state: "VIC", lga: "Hepburn", kind: "council", lat: -37.4268, lon: 143.8957, place: "Gravel road verge",
+      types: ["mattress"], size: "few", photo: null, alt: "", seen: "Yesterday", flow: [["ack", 1 * H + 20 * M]] },
+    { id: "NO-24777", age: 3 * D + 1 * H, suburb: "Daylesford VIC", state: "VIC", lga: "Hepburn", kind: "council", lat: -37.3437, lon: 144.1466, place: "Nature strip",
+      types: ["couch"], size: "few", photo: "1681013106634-6e880f17a81f", alt: "An armchair left on a footpath", seen: "Today",
+      flow: [["ack", 2 * H], ["scheduled", 2 * H + 20 * M, { crew: "Recycle Group crew" }], ["collected", 22 * H, { by: "Recycle Group crew" }]], items: [{ t: "couch", size: "1", qty: 1 }] }
   ];
   var base = Date.now(), sampleCache = null;
   NO.samples = function () {

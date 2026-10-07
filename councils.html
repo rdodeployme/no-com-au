@@ -3,16 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>For councils and land managers · no.com.au</title>
+<title>For councils and land managers · No More Dumping</title>
 <meta name="description" content="Dumped rubbish reports routed to the right owner, collected next working day, recycled and reported back. A Recycle Group initiative.">
 <meta name="theme-color" content="#F4F3EF">
-<meta property="og:title" content="For councils and land managers · no.com.au">
+<meta property="og:title" content="For councils and land managers · No More Dumping">
 <meta property="og:description" content="Dumped rubbish reports routed to the right owner, collected next working day, recycled and reported back. A Recycle Group initiative.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='11.5' fill='white' stroke='%23D8261C' stroke-width='6'/%3E%3Cpath d='M16 16V9.5' stroke='%23141414' stroke-width='3.2' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='white' stroke='%23141414' stroke-width='3.4'/%3E%3Cpath d='M16 6.4v2.4M25.6 16h-2.4M16 25.6v-2.4M6.4 16h2.4' stroke='%23141414' stroke-width='2' stroke-linecap='round'/%3E%3Cpath d='M16 16l4.4-5.8' stroke='%23141414' stroke-width='3' stroke-linecap='round'/%3E%3Ccircle cx='16' cy='16' r='2.1' fill='%23141414'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;700;800;900&family=Overpass+Mono:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="no.css?v=1791047319">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css"><link rel="stylesheet" href="no.css?v=1791047400">
 </head>
 <body class="page-councils">
 <header class="site-head"><div class="wrap bar">
@@ -22,13 +22,13 @@
 <button class="menu-btn" type="button" data-menu aria-label="Menu" aria-expanded="false"><svg class="ic" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M5 9h22M5 16h22M5 23h22"/></svg></button>
 </div></header>
 <main>
-<section class="c-hero">
+<section class="c-hero" id="top">
   <div class="wrap">
     <h1 class="h-xl">Every dumped pile, collected and <span class="red">proven.</span></h1>
     <div class="c-hero-grid">
       <div>
         <p class="lede">Residents get a 20-second way to report dumping. You get one place to act on it: sent to the right owner, collected the next working day, recycled, and reported back with a receipt.</p>
-        <div class="cta-row" style="margin-top:30px"><a class="btn lg" href="console.html">Open the demo console</a><a class="btn ghost lg" href="#pilot">Start a pilot</a></div>
+        <div class="cta-row" id="hero-cta" style="margin-top:30px"><a class="btn lg" href="console.html">Open the demo console</a><a class="btn ghost lg" href="#pilot">Start a pilot</a></div>
       </div>
       <div class="inbox" aria-label="Sample inbox">
         <div class="inbox-top"><span class="logo"><span class="lt">n<span class="o"></span> more dumping</span></span><span>Inbox</span><span class="note-sample">Sample data</span></div>
@@ -71,6 +71,7 @@
       <h2 class="h-l">Stop it coming back</h2>
       <p class="lede" style="margin:20px 0 6px">Collecting it is half the job. The other half is making dumping harder and getting rid of stuff easier.</p>
       <ul class="bul light-bul" id="prevbul"></ul>
+      <a class="btn ink lg" href="print/no-more-dumping-hotspot-sign-a3.pdf" style="margin-top:26px">Download the A3 sign</a>
     </div>
   </div>
 </section>
@@ -97,7 +98,7 @@
 <section class="sec white" id="pilot">
   <div class="wrap pilot">
     <div>
-      <h2 class="h-l">Start with a 90&#8209;day pilot</h2>
+      <h2 class="h-l" id="pilot-h">Start with a 90&#8209;day pilot</h2>
       <p class="lede" style="margin-top:20px">One area, real reports, real collections. At the end you'll have the numbers to decide.</p>
       <ol>
         <li><span class="w">Weeks 1 to 2</span><div><b>Set up</b><span>We map the area, agree your targets and send reports to your team's inbox. QR signs go up at known hotspots.</span></div></li>
@@ -107,10 +108,10 @@
     </div>
     <form class="form-card" id="pilot-form" novalidate>
       <h3>Request a pilot</h3>
-      <label class="fld">Council or organisation<input class="in" required></label>
+      <label class="fld">Council or organisation<input class="in" id="f-org" required></label>
       <label class="fld">Your name<input class="in" required></label>
       <label class="fld">Work email<input class="in" type="email" required placeholder="name@council.vic.gov.au"></label>
-      <label class="fld">Where you'd start <span class="small">(optional)</span><input class="in" placeholder="Suburb, ward or hotspot"></label>
+      <label class="fld">Where you'd start <span class="small">(optional)</span><input class="in" id="f-where" placeholder="Suburb, ward or hotspot"></label>
       <button class="btn lg block" type="submit">Request a pilot</button>
     </form>
   </div>
@@ -124,14 +125,16 @@
 <div><h4>Residents</h4><ul><li><a href="report.html">Report dumping</a></li><li><a href="map.html">Live map</a></li><li><a href="rid.html">Get rid of stuff</a></li><li><a href="index.html#faq">Questions</a></li></ul></div>
 <div><h4>Councils and land managers</h4><ul><li><a href="councils.html">How it works for you</a></li><li><a href="console.html">Demo console</a></li><li><a href="councils.html#pilot">Start a pilot</a></li></ul></div>
 </div>
-<p class="fine">Working prototype. Reports, clocks and figures on this site are samples and no emails are sent. Routing uses ABS council boundaries and OpenStreetMap data. Photos from Unsplash. Map tiles &copy; Esri.</p>
+<p class="fine">Working prototype. Reports, clocks and figures on this site are samples and no emails are sent. Routing uses ABS council boundaries and OpenStreetMap data. Roadside photos from Unsplash. Plant photos from Recycle Group. Map tiles &copy; Esri.</p>
 </div></footer>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="no.js?v=1791047318"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script src="no.js?v=1791047400"></script>
 <script>
 (function(){
   var $=NO.$, I=NO.icon, esc=NO.esc;
-  var all=NO.store.all().filter(function(r){return NO.status(r)!=='done';}).sort(function(a,b){return a.created-b.created;}).slice(0,4);
+  var CK=(new URLSearchParams(location.search).get('c')||'').toLowerCase(), LGA={geelong:'Greater Geelong','hobsons-bay':'Hobsons Bay',hepburn:'Hepburn'}[CK];
+  var all=NO.store.all().filter(function(r){return NO.status(r)!=='done';}).sort(function(a,b){ if(LGA){ var x=(a.lga===LGA)-(b.lga===LGA); if(x) return -x; } return a.created-b.created;}).slice(0,4);
   $('#inbox').innerHTML=all.map(function(r){var ph=r.photos&&r.photos[0];
     return '<a class="irow" href="console.html#'+r.id+'" style="text-decoration:none">'+(ph?'<img src="'+NO.img(ph,160,130)+'" alt="">':'<span class="noph">'+I(r.types[0])+'</span>')+
       '<div><b>'+esc(NO.typeList(r.types))+'</b><small>'+esc(r.suburb)+'<i class="sep" aria-hidden="true"></i>'+esc(r.to)+'</small></div><div class="t">'+NO.chip(r)+'<span class="mono" data-from="'+r.created+'"></span></div></a>';}).join('');
@@ -141,7 +144,8 @@
     ['Collected next working day',['Book a Recycle Group crew from the email, in one tap','7 to 11am windows, with a photo on collection','Crews complete daily safety and compliance checks in eCheck','Anything hazardous goes to licensed specialists, never a general crew','Or use your own crews and keep the clock and receipts']],
     ['Recycled and reported',['Mattresses go to The Mattress Recycling Company','Steel, timber, e-waste and polystyrene recovered','Good furniture rehomed through charity partners first','A recovery receipt for every collection','Monthly figures by suburb, stream and time to collect, ready for your waste reporting and for Yarta']]
   ];
-  $('#pillars').innerHTML=P.map(function(p,i){return '<div class="pillar"><div class="n">0'+(i+1)+'</div><h3>'+p[0]+'</h3><ul>'+p[1].map(function(x){return '<li>'+I('check')+'<span>'+x+'</span></li>';}).join('')+'</ul></div>';}).join('');
+  var PH=[[NO.img('1703296958227-d01823347876',800,460),'Two couches dumped on a gravel verge'],['img/collect-mattress.webp','Two Mattress Recycling Company crew carrying a mattress'],['img/infra-mattress-line.webp','A mattress on the processing line, with recovered springs caged in front']];
+  $('#pillars').innerHTML=P.map(function(p,i){return '<div class="pillar"><div class="pph"><img src="'+PH[i][0]+'" alt="'+PH[i][1]+'" loading="lazy"></div><div class="n">0'+(i+1)+'</div><h3>'+p[0]+'</h3><ul>'+p[1].map(function(x){return '<li>'+I('check')+'<span>'+x+'</span></li>';}).join('')+'</ul></div>';}).join('');
   var B=[['Fewer follow-up calls','Residents watch the report move, so they don\'t ring to ask.'],['Your targets, not ours','Set the timeframe for each area. The clock shows progress against it.'],
     ['Handovers on the record','If it\'s VicTrack\'s or a private owner\'s, pass it on in one tap. Everyone can see who had it and when.'],['Good work gets seen','Every collection ends with a receipt showing what was picked up and where it went.']];
   $('#clockbul').innerHTML=B.map(function(b){return '<li>'+I('check')+'<div><b>'+b[0]+'</b><span>'+b[1]+'</span></div></li>';}).join('');
@@ -158,6 +162,59 @@
   ];
   $('#plans').innerHTML=PL.map(function(p){return '<div class="plan'+(p.f?' feat':'')+'"><span class="tag2">'+(p.f?'Most councils start here':'&nbsp;')+'</span><h3>'+p.t+'</h3><div class="pr">'+p.p+'</div><ul>'+p.d.map(function(x){return '<li>'+I('check')+'<span>'+x+'</span></li>';}).join('')+'</ul><a class="btn '+(p.f?'':'ink')+' block" href="'+(p.h||'#pilot')+'">'+p.b+'</a></div>';}).join('');
   try{ new QRCode($('#qr'),{text:location.href.replace(/councils\.html.*$/,'report.html'),width:232,height:232,colorDark:'#141414',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M}); }catch(e){ $('#qr').innerHTML=I('sign'); }
+  /* ---------- a version of this page for each pilot council: councils.html?c=geelong ---------- */
+  var SRC={
+    gee:['City of Greater Geelong, Jan 2026','https://www.geelongcity.vic.gov.au/whats-happening/news-and-updates/city-crews-battle-illegal-dumping-ratepayers-bear-cost'],
+    mayor:['Mayor\'s column, Ocean Grove Voice, Feb 2026','https://oceangrovevoice.com.au/news/15-02-2026/no-excuse-for-illegal-dumping/'],
+    hbStrat:['Waste and Litter Management Strategy 2025','https://www.hobsonsbay.vic.gov.au/files/assets/public/v/2/documents/council/policies/waste-policies/waste-and-litter-management-strategy-2025-july-2019.pdf'],
+    hb360:['Hobsons Bay 360','https://hobsonsbay.vic.gov.au/Council/Hobsons-Bay-360/78.-Hard-Waste-Collection'],
+    hbHw:['Hobsons Bay hard waste','https://hobsonsbay.vic.gov.au/Services/Waste-Recycling/Hard-waste'],
+    hbPop:['ABS Census 2021','https://abs.gov.au/census/find-census-data/quickstats/2021/LGA23110'],
+    hePop:['ABS Census 2021','https://abs.gov.au/census/find-census-data/quickstats/2021/LGA22910'],
+    heCctv:['Council meeting agenda, 21 May 2024','https://www.hepburn.vic.gov.au/files/assets/public/v/1/council/documents/minutes-agendas/public-agenda-ordinary-meeting-of-council-21-may-2024.pdf'],
+    heHw:['Hepburn hard waste','https://www.hepburn.vic.gov.au/Residents/Waste/Hard-waste']
+  };
+  var CP={
+    geelong:{name:'City of Greater Geelong',short:'Greater Geelong',lga:'Greater Geelong',c:[-38.12,144.36],z:10,where:'e.g. Beach Road, Avalon',
+      intro:'Residents already get two free hard waste bookings and two free mattress collections a year, and the piles still turn up. Here\'s what the City has published.',
+      stats:[['6,619','requests to remove dumped rubbish in 2024‑25','gee'],['3,000+','requests already this financial year, by mid‑January','gee'],['$300,000','spent on disposal alone this financial year by February, before labour, plant and transport','mayor'],['$2,035','top fine for littering','gee']]},
+    'hobsons-bay':{name:'Hobsons Bay City Council',short:'Hobsons Bay',lga:'Hobsons Bay',c:[-37.85,144.81],z:12,
+      intro:'Every property gets a free hard waste booking each year, and the Council runs thousands of them. Dumped rubbish still turns up on top of that.',
+      stats:[['1,000 t','of dumped rubbish collected in 2017‑18, about 400 car trailers','hbStrat'],['10,000+','hard waste collections from April 2023 to March 2024','hb360'],['1 free','hard waste booking per property a year, up to 3 m³. A second costs $98.57.','hbHw'],['91,322','residents','hbPop']]},
+    hepburn:{name:'Hepburn Shire Council',short:'Hepburn Shire',lga:'Hepburn',c:[-37.37,143.98],z:10,
+      intro:'Small towns, a big area and a lot of roadside. The Council has already upgraded CCTV at the Creswick Transfer Station over illegal dumping concerns.',
+      stats:[['16,604','residents across the shire','hePop'],['CCTV','upgraded at the Creswick Transfer Station over illegal dumping concerns','heCctv'],['Clunes','hard waste collection, run by expression of interest','heHw']]}
+  };
+  var C=CP[CK];
+  if(C){
+    document.title='No More Dumping for '+C.short;
+    document.body.classList.add('for-council');
+    var bar=document.createElement('div'); bar.className='for-bar';
+    bar.innerHTML='<div class="wrap"><span>Prepared for</span> <b>'+esc(C.name)+'</b></div>';
+    $('.site-head').insertAdjacentElement('afterend',bar);
+    $('.c-hero h1').innerHTML='Every dumped pile in '+esc(C.short)+', collected and <span class="red">proven.</span>';
+    $('#hero-cta').insertAdjacentHTML('beforeend','<a class="btn ghost lg" href="print/no-more-dumping-'+CK+'.pdf">Download the one-pager</a>');
+    var st=C.stats.map(function(s){ var src=SRC[s[2]]; return '<div class="lstat"><b>'+s[0]+'</b><span>'+esc(s[1])+'</span><a href="'+src[1]+'" target="_blank" rel="noopener">'+esc(src[0])+'</a></div>'; }).join('');
+    $('#top').insertAdjacentHTML('afterend','<section class="sec white c-local" id="local"><div class="wrap">'+
+      '<div class="head-row"><h2 class="h-l">Dumping in '+esc(C.short)+'</h2><p class="lede">'+esc(C.intro)+'</p></div>'+
+      '<div class="local"><div class="lstats">'+st+'</div><div class="local-map" id="local-map" aria-label="Map of '+esc(C.short)+' with sample reports"></div></div>'+
+      '<div class="lnow"><div class="a"><h4>Reporting it today</h4><p>An online form, a phone call or an email to the council.</p></div>'+
+      '<div class="b"><h4>With No More Dumping</h4><p>Three taps with a photo and a pin. It reaches your team as one email, the clock is public, and the resident gets a receipt when it\'s gone.</p></div></div>'+
+      '<p class="small" style="margin-top:14px">Figures are the council\'s own published numbers, linked to where they appear. Pins on the map are sample reports.</p>'+
+      '</div></section>');
+    $('#pilot-h').innerHTML='Start with a 90&#8209;day pilot in '+esc(C.short);
+    $('#f-org').value=C.name; if(C.where) $('#f-where').placeholder=C.where;
+    try{
+      var lm=L.map('local-map',{zoomControl:false,scrollWheelZoom:false,attributionControl:true}).setView(C.c,C.z);
+      NO.tiles(lm,true);
+      var mine=NO.store.all().filter(function(r){return r.lga===C.lga;});
+      mine.forEach(function(r){ NO.marker(r).addTo(lm).on('click',function(){ location.href='r.html#'+r.id; }); });
+      fetch('https://geo.abs.gov.au/arcgis/rest/services/ASGS2023/LGA/MapServer/0/query?where='+encodeURIComponent("lga_name_2023='"+C.lga+"'")+'&outFields=lga_name_2023&returnGeometry=true&outSR=4326&maxAllowableOffset=0.0008&f=geojson')
+        .then(function(r){return r.json();})
+        .then(function(g){ if(!g||!g.features||!g.features.length) return; var lay=L.geoJSON(g,{interactive:false,style:{color:'#141414',weight:2.5,opacity:.85,fillColor:'#D8261C',fillOpacity:.05}}).addTo(lm); lay.bringToBack(); lm.fitBounds(lay.getBounds(),{padding:[18,18]}); })
+        .catch(function(){});
+    }catch(e){}
+  }
   $('#pilot-form').onsubmit=function(e){ e.preventDefault(); if(!this.checkValidity()){this.reportValidity();return;}
     this.innerHTML='<h3>Thanks.</h3><p class="lede" style="font-size:18px">This is a prototype, so nothing was sent. In the live version this goes straight to the Recycle Group team.</p>'; };
 })();

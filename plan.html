@@ -3,16 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>no.com.au · Business case</title>
-<meta name="description" content="Internal: the business case for no.com.au.">
+<title>No More Dumping · Business case</title>
+<meta name="description" content="Internal: the business case for No More Dumping.">
 <meta name="robots" content="noindex"><meta name="theme-color" content="#F4F3EF">
-<meta property="og:title" content="no.com.au · Business case">
-<meta property="og:description" content="Internal: the business case for no.com.au.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='11.5' fill='white' stroke='%23D8261C' stroke-width='6'/%3E%3Cpath d='M16 16V9.5' stroke='%23141414' stroke-width='3.2' stroke-linecap='round'/%3E%3C/svg%3E">
+<meta property="og:title" content="No More Dumping · Business case">
+<meta property="og:description" content="Internal: the business case for No More Dumping.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='white' stroke='%23141414' stroke-width='3.4'/%3E%3Cpath d='M16 6.4v2.4M25.6 16h-2.4M16 25.6v-2.4M6.4 16h2.4' stroke='%23141414' stroke-width='2' stroke-linecap='round'/%3E%3Cpath d='M16 16l4.4-5.8' stroke='%23141414' stroke-width='3' stroke-linecap='round'/%3E%3Ccircle cx='16' cy='16' r='2.1' fill='%23141414'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;700;800;900&family=Overpass+Mono:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="no.css?v=1791047319">
+<link rel="stylesheet" href="no.css?v=1791047400">
 </head>
 <body class="page-plan">
 <header class="site-head"><div class="wrap bar">
@@ -29,82 +29,114 @@
 
   <div class="call">
     <span class="label">The call</span>
-    <p>Run a 90-day pilot with one council. Residents report dumping in three taps, the council acts from an email, and our crews collect it the next working day and recycle it. If it works, every council that signs becomes a collection contract feeding our recycling.</p>
+    <p>Run a 90-day pilot with one council. Residents report dumping in three taps, the council acts from an email, and our crews collect it the next working day and recycle it. Every council that signs becomes a collection contract feeding our recycling.</p>
   </div>
 
-  <h2>The idea</h2>
-  <p>A free app for residents, a console for councils and land managers, and Recycle Group crews and recycling behind it. Every report gets a public clock that runs until the rubbish is gone, then a receipt showing where it went. Reporting is the front door. Collection and recycling are the business.</p>
+  <h2>The numbers</h2>
+  <p>Pick a council, then change any figure. Grey figures are examples to replace with our real rates.</p>
+  <section class="mdl" id="mdl" aria-label="Money model">
+    <div class="mdl-pre" role="group" aria-label="Council">
+      <button type="button" data-p="geelong" aria-pressed="true">Greater Geelong</button>
+      <button type="button" data-p="hobsons" aria-pressed="false">Hobsons Bay</button>
+      <button type="button" data-p="hepburn" aria-pressed="false">Hepburn</button>
+      <button type="button" data-p="three" aria-pressed="false">All three</button>
+      <button type="button" data-p="vic" aria-pressed="false">Victoria</button>
+    </div>
+    <div class="mdl-grid">
+      <div class="mdl-in">
+        <label class="mi src"><span><b>Dumping reports a year</b><small id="m-src"></small></span><input type="number" min="0" step="10" id="i-rep"></label>
+        <label class="mi"><span><b>Share we collect</b><small>Example. The rest stay with council crews.</small></span><span class="u"><input type="number" min="0" max="100" step="5" id="i-share" value="50">%</span></label>
+        <label class="mi"><span><b>Price per collection</b><small>Example</small></span><span class="u">$<input type="number" min="0" step="10" id="i-price" value="220"></span></label>
+        <label class="mi"><span><b>Collections per crew day</b><small>Example</small></span><input type="number" min="1" step="1" id="i-perday" value="10"></label>
+        <label class="mi"><span><b>Crew day cost</b><small>Example: truck, two crew, fuel</small></span><span class="u">$<input type="number" min="0" step="50" id="i-crew" value="1100"></span></label>
+        <label class="mi"><span><b>Processing per collection</b><small>Example</small></span><span class="u">$<input type="number" min="0" step="5" id="i-proc" value="40"></span></label>
+        <label class="mi"><span><b>Console, per council a month</b><small>Example. Yarta's proposed price is $1,999.</small></span><span class="u">$<input type="number" min="0" step="50" id="i-con" value="750"></span></label>
+        <label class="mi"><span><b>Average load</b><small>Example</small></span><span class="u"><input type="number" min="0" step="0.1" id="i-load" value="1.5">m³</span></label>
+        <label class="mi"><span><b>Share recycled or reused</b><small>Recycle Group's target</small></span><span class="u"><input type="number" min="0" max="100" step="5" id="i-rec" value="60">%</span></label>
+      </div>
+      <div class="mdl-out" aria-live="polite">
+        <div class="mo big"><span>Revenue a year</span><b id="o-rev"></b><small id="o-rev2"></small></div>
+        <div class="mo big g"><span>Left after crews and processing</span><b id="o-con"></b><small id="o-con2"></small></div>
+        <div class="mo-row">
+          <div class="mo"><span>Collections</span><b id="o-col"></b><small id="o-col2"></small></div>
+          <div class="mo"><span>Crews needed</span><b id="o-crews"></b><small id="o-crews2"></small></div>
+        </div>
+        <div class="mo land"><span>Kept out of landfill</span><b id="o-m3"></b><small id="o-m32"></small></div>
+      </div>
+    </div>
+    <p class="mdl-note">Working days: 240 a year. Nothing here is a quoted price. Collection revenue only counts the share we collect.</p>
+  </section>
 
-  <h2>Why it's a business</h2>
+  <h2>Why councils will pay</h2>
   <ul class="pts">
-    <li><b>Councils already pay for this.</b> Greater Geelong logged 6,619 requests to remove dumped rubbish in 2024-25, and more than 3,000 more by early 2026, at a cost to ratepayers of "hundreds of thousands of dollars each year". <a href="https://www.geelongcity.vic.gov.au/whats-happening/news-and-updates/city-crews-battle-illegal-dumping-ratepayers-bear-cost" target="_blank" rel="noopener">City of Greater Geelong</a> <span class="tg ok">Sourced</span></li>
-    <li><b>Nobody knows who to call.</b> Councils handle household items on council land. EPA Victoria handles building waste, asbestos, garden waste, tyres, chemicals, packaging and old cars. Rail, main roads and parks each have their own owner. <a href="https://www.epa.vic.gov.au/report-illegal-waste-dumping" target="_blank" rel="noopener">EPA Victoria</a> <span class="tg ok">Sourced</span></li>
-    <li><b>We sort that out automatically.</b> The prototype finds the council from ABS boundaries and spots main roads and rail land from OpenStreetMap, then copies EPA Victoria by waste type.</li>
+    <li><b>They already pay for it.</b> Greater Geelong had 6,619 requests to remove dumped rubbish in 2024‑25, and more than 3,000 by January this financial year. <a href="https://www.geelongcity.vic.gov.au/whats-happening/news-and-updates/city-crews-battle-illegal-dumping-ratepayers-bear-cost" target="_blank" rel="noopener">City of Greater Geelong</a></li>
+    <li><b>Disposal alone runs to hundreds of thousands.</b> Geelong's mayor put this year's disposal bill at around $300,000 by February, before labour, plant and transport. <a href="https://oceangrovevoice.com.au/news/15-02-2026/no-excuse-for-illegal-dumping/" target="_blank" rel="noopener">Ocean Grove Voice</a></li>
+    <li><b>The state is funding clean-ups.</b> $21.5 million announced in October 2025, including $8.5 million to help councils and land managers with clean-up costs. <a href="https://www.premier.vic.gov.au/cracking-down-illegal-dumping" target="_blank" rel="noopener">Premier of Victoria</a></li>
+    <li><b>Nobody knows who to call.</b> Council, EPA Victoria, VicTrack, state roads and Parks Victoria each own part of the problem. We route it automatically and copy EPA by waste type. <a href="https://www.epa.vic.gov.au/report-illegal-waste-dumping" target="_blank" rel="noopener">EPA Victoria</a></li>
   </ul>
 
-  <h2>What's already out there</h2>
-  <p>Snap Send Solve sends reports to councils by email for free and charges councils for integration, duplicate filtering, analytics and messaging. <a href="https://help.snapsendsolve.com/en/articles/13780667-what-solvers-councils-authorities-receive-for-free" target="_blank" rel="noopener">Snap Send Solve</a> <span class="tg ok">Sourced</span> Councils also run their own forms and phone lines, and EPA has a hotline.</p>
-  <p><b>None of them collect it, recycle it or show what happened to it.</b> That's the gap, and it's what the group already does.</p>
+  <h2>Why we win</h2>
+  <ul class="pts">
+    <li><b>Nobody else closes the loop.</b> Snap Send Solve emails councils for free and sells them integrations and analytics. Nobody collects it, recycles it and proves it. <a href="https://help.snapsendsolve.com/en/articles/13780667-what-solvers-councils-authorities-receive-for-free" target="_blank" rel="noopener">Snap Send Solve</a></li>
+    <li><b>The clock is the hook.</b> Residents watch it move, and fast councils get credit instead of complaints.</li>
+    <li><b>We know prevention works.</b> Making ten things free to drop off cut roadside dumping, and we can offer free drop-off days to pilot councils. <span class="tg nc">Need the before and after numbers</span></li>
+    <li><b>It scales past our crews.</b> Rubbish.com.au's registered collectors can cover areas our crews don't. <span class="tg pr">Proposed</span></li>
+  </ul>
 
   <h2>How it makes money</h2>
   <table class="ptable">
     <thead><tr><th>Stream</th><th>Who pays</th><th>How</th></tr></thead>
     <tbody>
-      <tr><td><b>Collection</b></td><td>Councils and land managers</td><td>Per collection or a monthly service, done by Recycle Group crews. The main revenue. <span class="tg pr">Proposed</span></td></tr>
-      <tr><td><b>Console</b></td><td>Councils</td><td>Annual subscription for the inbox, map, hotspots, public clock and monthly reports. Reports by email stay free so there's no procurement fight to start. <span class="tg pr">Proposed</span></td></tr>
+      <tr><td><b>Collection</b></td><td>Councils and land managers</td><td>Per collection or a monthly service. The main revenue. <span class="tg pr">Proposed</span></td></tr>
+      <tr><td><b>Console</b></td><td>Councils</td><td>Subscription for the inbox, map, hotspots, public clock and monthly reports. Reports by email stay free, so there's no procurement fight to start. <span class="tg pr">Proposed</span></td></tr>
       <tr><td><b>Recovered material</b></td><td>Into our own facilities</td><td>Mattresses to TMRC, plus steel, timber and polystyrene through group processing.</td></tr>
-      <tr><td><b>Land managers</b></td><td>State roads, VicTrack, Parks Victoria, developers, property managers</td><td>The same service on their land. <span class="tg pr">Proposed</span></td></tr>
-      <tr><td><b>Reporting</b></td><td>Councils</td><td>Recovery figures flow into Yarta (yes.com.au). <span class="tg pr">Proposed</span></td></tr>
+      <tr><td><b>Land managers</b></td><td>State roads, VicTrack, Parks Victoria, developers</td><td>The same service on their land. <span class="tg pr">Proposed</span></td></tr>
     </tbody>
   </table>
-  <p class="small">Prices aren't set. The nearest reference is Yarta's proposed council price of $1,999 a month for councils up to 50,000 residents. I'd pitch the console well under that and make the money on collections.</p>
-
-  <h2>Why we win</h2>
-  <ul class="pts">
-    <li><b>We're the only one who can close the loop:</b> report, collect next working day, recycle, and prove it with a receipt.</li>
-    <li><b>The public clock is the hook.</b> Residents can see it moving, and fast councils get credit instead of complaints.</li>
-    <li><b>We already know prevention works.</b> Making ten things free to drop off significantly cut illegal roadside dumping. We can offer free drop-off days to pilot councils. <span class="tg nc">Need the before and after numbers</span></li>
-    <li><b>It scales past our crews.</b> Rubbish.com.au's registered collectors could do collections in areas our crews don't cover. <span class="tg pr">Proposed</span></li>
-  </ul>
 
   <h2>What could go wrong</h2>
   <table class="ptable">
     <thead><tr><th>Risk</th><th>How we handle it</th></tr></thead>
     <tbody>
-      <tr><td>Councils see a conflict of interest: the reporting tool belongs to the collector.</td><td>Routing is neutral and the council picks who collects. Reports by email are free whoever collects.</td></tr>
-      <tr><td>Councils don't want a public clock.</td><td>The clock runs against their own targets, and every collection ends on good news. Start with a council that wants the credit.</td></tr>
-      <tr><td>"Public scrutiny of dumpers" turns into naming people.</td><td>Scrutiny is on the dumping, not people. Regos and identities go only to the council and EPA, never on the site. Get legal advice before launch.</td></tr>
-      <tr><td>Fake or malicious reports.</td><td>No cash for reports. Duplicates are merged. A photo and pin are needed before a crew is sent.</td></tr>
-      <tr><td>Hazardous material.</td><td>Flagged at the report, EPA Victoria copied, never handled by a general crew.</td></tr>
-      <tr><td>Faces and number plates in public photos.</td><td>Blur them automatically before photos go public.</td></tr>
-      <tr><td>Reports going to the wrong owner.</td><td>One tap passes it on, the clock keeps running, and routing gets tuned per council.</td></tr>
+      <tr><td>Councils see a conflict: the reporting tool belongs to the collector.</td><td>Routing is neutral and the council picks who collects. Reports by email are free whoever collects.</td></tr>
+      <tr><td>Councils don't want a public clock.</td><td>It runs against their own targets, and every collection ends on good news. Start with a council that wants the credit.</td></tr>
+      <tr><td>Scrutiny turns into naming people.</td><td>Scrutiny is on the dumping, not people. Regos go only to the council and EPA. Legal advice before launch.</td></tr>
+      <tr><td>Fake reports, hazardous waste, faces in photos.</td><td>Duplicates merged, photo and pin before a crew goes, hazards flagged to EPA and never handled by a general crew, faces and plates blurred.</td></tr>
     </tbody>
   </table>
 
   <h2>The pilot</h2>
-  <p>90 days in one area with a council we already work with. <span class="tg pr">Proposed</span></p>
   <ul class="pts">
     <li><b>Greater Geelong</b> has the volume, and our crews and drop-off are local.</li>
     <li><b>Hepburn Shire</b> is smaller and already a client through the Clunes collection.</li>
     <li><b>Hobsons Bay</b> knows us from the collection booking tender.</li>
   </ul>
-  <p>Measure: median time to collect, share collected by the next working day, duplicates merged, kilograms recovered, and resident follow-up calls.</p>
+  <p>Measure: median time to collect, share collected by the next working day, m³ kept out of landfill, kilograms recovered, and resident follow-up calls.</p>
+  <div class="pitch" id="pitch">
+    <b>Ready to send each council</b>
+    <ul>
+      <li><a href="geelong/">no.com.au/geelong</a><span>Pitch page</span><a href="print/no-more-dumping-geelong.pdf">One-pager</a></li>
+      <li><a href="hobsons-bay/">no.com.au/hobsons-bay</a><span>Pitch page</span><a href="print/no-more-dumping-hobsons-bay.pdf">One-pager</a></li>
+      <li><a href="hepburn/">no.com.au/hepburn</a><span>Pitch page</span><a href="print/no-more-dumping-hepburn.pdf">One-pager</a></li>
+      <li><a href="print/no-more-dumping-hotspot-sign-a3.pdf">A3 hotspot sign</a><span>Print and pin up</span><a href="print/no-more-dumping-councils.pdf">General one-pager</a></li>
+    </ul>
+  </div>
 
   <h2>Decisions needed</h2>
   <ol class="dec">
-    <li>Name and domain: no.com.au. <span class="tg nc">Confirm we hold it</span></li>
-    <li>Pricing for the console and per collection.</li>
+    <li>Prices: per collection and for the console. The model above is ready for them.</li>
     <li>Which council to pilot with.</li>
     <li>Crew capacity for next-day collection in the pilot area.</li>
+    <li>Domain: confirm we hold no.com.au. <span class="tg nc">To confirm</span></li>
     <li>Legal review of the public clock, photos and regos.</li>
     <li>Whether collections run as Arrivy jobs, like the council booking build.</li>
   </ol>
 
   <h2>See it working</h2>
   <ul class="links">
+    <li><a href="tour.html">Richard's version: the whole thing in 8 steps</a></li>
     <li><a href="report.html">The resident app, with the council's side live next to it</a></li>
     <li><a href="console.html">The council console</a></li>
-    <li><a href="index.html">The public site</a> and <a href="councils.html">the councils page</a></li>
   </ul>
 </article></main>
 <footer class="site-foot"><div class="wrap">
@@ -115,8 +147,51 @@
 <div><h4>Residents</h4><ul><li><a href="report.html">Report dumping</a></li><li><a href="map.html">Live map</a></li><li><a href="rid.html">Get rid of stuff</a></li><li><a href="index.html#faq">Questions</a></li></ul></div>
 <div><h4>Councils and land managers</h4><ul><li><a href="councils.html">How it works for you</a></li><li><a href="console.html">Demo console</a></li><li><a href="councils.html#pilot">Start a pilot</a></li></ul></div>
 </div>
-<p class="fine">Working prototype. Reports, clocks and figures on this site are samples and no emails are sent. Routing uses ABS council boundaries and OpenStreetMap data. Photos from Unsplash. Map tiles &copy; Esri.</p>
+<p class="fine">Working prototype. Reports, clocks and figures on this site are samples and no emails are sent. Routing uses ABS council boundaries and OpenStreetMap data. Roadside photos from Unsplash. Plant photos from Recycle Group. Map tiles &copy; Esri.</p>
 </div></footer>
-<script src="no.js?v=1791047318"></script>
+<script src="no.js?v=1791047400"></script>
+<script>
+(function(){
+  var $=NO.$, $$=NO.$$;
+  /* Geelong's published rate per resident, used where a council publishes no count */
+  var GEE=6619, GEEPOP=271057, rate=GEE/GEEPOP;
+  var est=function(pop){ return Math.round(pop*rate/10)*10; };
+  var P={
+    geelong:{rep:GEE,n:1,src:'6,619 requests in 2024-25. <a href="https://www.geelongcity.vic.gov.au/whats-happening/news-and-updates/city-crews-battle-illegal-dumping-ratepayers-bear-cost" target="_blank" rel="noopener">City of Greater Geelong</a>'},
+    hobsons:{rep:est(91322),n:1,src:'Estimate. Hobsons Bay publishes no count, so this is Geelong\'s rate for 91,322 residents.'},
+    hepburn:{rep:est(16604),n:1,src:'Estimate. Hepburn publishes no count, so this is Geelong\'s rate for 16,604 residents.'},
+    three:{rep:GEE+est(91322)+est(16604),n:3,src:'Geelong\'s published figure plus the two estimates.'},
+    vic:{rep:135000,n:79,src:'About 135,000 Victorian reports through Snap Send Solve in 2025, all 79 councils. <a href="https://www.3aw.com.au/its-not-the-communitys-problem-illegal-rubbish-dumping-remains-rampant-across-victoria/" target="_blank" rel="noopener">3AW</a>'}
+  };
+  var cur='geelong', DAYS=240;
+  var v=function(id){ var x=parseFloat($('#'+id).value); return isFinite(x)&&x>=0?x:0; };
+  var money=function(n){ var a=Math.abs(n); var s=a>=1e6?'$'+(a/1e6).toFixed(a>=1e7?1:2).replace(/\.?0+$/,'')+' million':'$'+(Math.round(a/1000)*1000).toLocaleString('en-AU'); return (n<0?'-':'')+s; };
+  var num=function(n){ return Math.round(n).toLocaleString('en-AU'); };
+  function calc(){
+    var rep=v('i-rep'), share=v('i-share')/100, price=v('i-price'), per=Math.max(1,v('i-perday')), crew=v('i-crew'), proc=v('i-proc'), con=v('i-con'), load=v('i-load'), rec=v('i-rec')/100, n=P[cur].n;
+    var col=rep*share, colRev=col*price, conRev=n*con*12, rev=colRev+conRev;
+    var days=col/per, cost=days*crew+col*proc, left=rev-cost;
+    var m3=col*load*rec;
+    $('#o-rev').textContent=money(rev);
+    $('#o-rev2').textContent=money(colRev)+' collections, '+money(conRev)+' console';
+    $('#o-con').textContent=money(left);
+    $('#o-con2').textContent=rev?Math.round(left/rev*100)+'% of revenue':'';
+    $('#o-col').textContent=num(col);
+    $('#o-col2').textContent=num(col/DAYS)+' a working day';
+    $('#o-crews').textContent=(Math.round(days/DAYS*10)/10).toLocaleString('en-AU');
+    $('#o-crews2').textContent=num(days)+' crew days a year';
+    $('#o-m3').textContent=NO.m3(m3);
+    var pools=m3/2500;
+    $('#o-m32').textContent='About '+NO.bins(m3)+(pools>=0.5?', or '+(pools<10?(Math.round(pools*10)/10).toLocaleString('en-AU'):num(pools))+' Olympic pool'+(Math.round(pools*10)/10===1?'':'s'):'')+', a year';
+  }
+  function pick(k){
+    cur=k; $$('.mdl-pre button').forEach(function(b){ b.setAttribute('aria-pressed',b.dataset.p===k); });
+    $('#i-rep').value=P[k].rep; $('#m-src').innerHTML=P[k].src; calc();
+  }
+  $('.mdl-pre').onclick=function(e){ var b=e.target.closest('button'); if(b) pick(b.dataset.p); };
+  $('#mdl').addEventListener('input',function(e){ if(e.target.matches('input')) e.target.classList.add('set'); calc(); });
+  pick('geelong');
+})();
+</script>
 </body>
 </html>
