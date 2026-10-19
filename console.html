@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;700;800;900&family=Overpass+Mono:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css"><link rel="stylesheet" href="no.css?v=1791047400">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css"><link rel="stylesheet" href="no.css?v=1792386202">
 </head>
 <body class="page-console">
 <div class="cn">
@@ -56,7 +56,7 @@
 </div>
 <div class="ev-wrap" id="ev" hidden></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-<script src="no.js?v=1791047400"></script>
+<script src="no.js?v=1792386202"></script>
 <script>
 (function(){
   var $=NO.$, $$=NO.$$, I=NO.icon, esc=NO.esc;
@@ -169,7 +169,7 @@
       var crew=(r.events.filter(function(x){return x.k==='scheduled';}).pop()||{}).crew||'Council crew';
       r.items=its2; NO.addEvent(r,'collected',{by:crew}); r.events.push({k:'receipt',t:Date.now()+1000}); save(r); return;
     }
-    if(b){ if(NO.status(r)==='open') NO.addEvent(r,'ack',{by:r.to}); NO.addEvent(r,'scheduled',{at:NO.window(r.created),crew:b.dataset.book}); save(r); return; }
+    if(b){ if(NO.status(r)==='open') NO.addEvent(r,'ack',{by:r.to}); NO.addEvent(r,'scheduled',{at:NO.window(Date.now()),crew:b.dataset.book}); save(r); return; }
     if(p){ var to=p.dataset.pass; NO.addEvent(r,'passed',{to:to,by:r.to}); r.why='Passed on by '+r.to; r.to=to; save(r); return; }
   });
 

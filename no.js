@@ -113,10 +113,10 @@
   /* ---------- what can be reported ---------- */
   NO.TYPES = [
     { id: "mattress", label: "Mattress" },
-    { id: "couch", label: "Couch or furniture" },
-    { id: "bags", label: "Bags or household" },
-    { id: "whitegoods", label: "Fridge or washer" },
-    { id: "ewaste", label: "TV or electronics" },
+    { id: "couch", label: "Couch or furniture", short: "Furniture" },
+    { id: "bags", label: "Bags or household", short: "Household bags" },
+    { id: "whitegoods", label: "Fridge or washer", short: "Whitegoods" },
+    { id: "ewaste", label: "TV or electronics", short: "Electronics" },
     { id: "tyres", label: "Tyres", epa: true },
     { id: "rubble", label: "Building rubble", epa: true },
     { id: "green", label: "Green waste", epa: true },
@@ -314,7 +314,11 @@
     return e.k;
   };
   NO.addEvent = function (r, k, data) { r.events.push(Object.assign({ k: k, t: Date.now() }, data || {})); return r; };
-  NO.newId = function () { return "NO-" + (24830 + Math.floor(Math.random() * 900)); };
+  NO.newId = function () {
+    var top = 24830;
+    try { NO.store.all().forEach(function (r) { var n = parseInt(String(r.id).replace(/\D/g, ""), 10); if (n >= top) top = n + 1; }); } catch (e) {}
+    return "NO-" + top;
+  };
 
   /* ---------- sample reports (relative to now) ---------- */
   var SAMPLE_DEF = [
@@ -421,7 +425,17 @@
     if (!mem || !mem.mine) mem = { mine: [], patch: {} };
     return mem;
   }
-  function write() { try { localStorage.setItem(KEY, JSON.stringify(mem)); } catch (e) {} subs.forEach(function (f) { try { f(); } catch (e) {} }); }
+  function write() {
+    try { localStorage.setItem(KEY, JSON.stringify(mem)); }
+    catch (e) {
+      /* browser storage full: keep the two newest reports whole, shed photos from older test reports, try again */
+      try {
+        mem.mine.slice(0, -2).forEach(function (r) { r.photos = []; });
+        localStorage.setItem(KEY, JSON.stringify(mem));
+      } catch (e2) { if (NO.toast) NO.toast("This browser is full, so your reports may not be kept. Clear test data on the console."); }
+    }
+    subs.forEach(function (f) { try { f(); } catch (e) {} });
+  }
   NO.store = {
     all: function () {
       var d = read(), s = NO.samples().map(function (r) { return d.patch[r.id] ? d.patch[r.id] : r; });
@@ -436,10 +450,13 @@
       else { var i = d.mine.map(function (x) { return x.id; }).indexOf(r.id); if (i > -1) d.mine[i] = r; else d.mine.push(r); }
       write();
     },
-    reset: function () { mem = { mine: [], patch: {} }; write(); },
+    reset: function () { mem = { mine: [], patch: {} }; try { localStorage.removeItem("nocomau.seen"); } catch (e) {} write(); },
     purge: function (fn) { var d = read(); d.mine = d.mine.filter(function (r) { return !fn(r); }); write(); }
   };
   NO.onChange = function (f) { subs.push(f); };
+  var SEEN = "nocomau.seen";
+  NO.hasSeen = function (id) { try { return (JSON.parse(localStorage.getItem(SEEN)) || []).indexOf(id) > -1; } catch (e) { return false; } };
+  NO.markSeen = function (id) { try { var a = JSON.parse(localStorage.getItem(SEEN)) || []; if (a.indexOf(id) < 0) a.push(id); localStorage.setItem(SEEN, JSON.stringify(a)); } catch (e) {} };
   window.addEventListener("storage", function (e) { if (e.key === KEY) { mem = null; subs.forEach(function (f) { try { f(); } catch (x) {} }); } });
 
   /* ---------- live clocks ---------- */
