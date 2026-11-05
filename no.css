@@ -1075,3 +1075,36 @@ textarea.in{height:auto;min-height:90px;padding:12px 14px;line-height:1.45;resiz
 }
 @media (max-height:860px) and (min-width:861px){.tv-cap{margin-top:24px}.tv-list button{padding:7px 10px 5px;font-size:14.5px}.tv-tip{display:none}.tv-lines{margin-top:14px;gap:7px}}
 @media (prefers-reduced-motion:reduce){.tv-fr,.tv-cover{transition:none}}
+
+/* crews (home) */
+.crews{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.crew-card{background:var(--paper);border-radius:20px;padding:28px 26px 30px}
+.crew-card .k{width:56px;height:56px;border-radius:50%;display:grid;place-items:center;background:#fff;margin-bottom:26px}
+.crew-card .k .ic{width:28px;height:28px}
+.crew-card h3{font-size:30px;margin-bottom:10px}
+.crew-card p{color:var(--ink2)}
+.crew-card.dark{background:var(--ink);color:#fff}
+.crew-card.dark .k{background:var(--red)}
+.crew-card.dark p{color:rgba(255,255,255,.78)}
+.crew-foot{display:flex;align-items:center;justify-content:space-between;gap:28px;flex-wrap:wrap;margin-top:40px;padding-top:32px;border-top:2px solid var(--ink)}
+.crew-line{font:900 clamp(24px,2.4vw,34px)/1.15 var(--f);letter-spacing:-.025em;max-width:22em}
+
+/* in the news (home) */
+.news{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.news-card{display:flex;flex-direction:column;gap:14px;background:#fff;border-radius:20px;padding:26px;text-decoration:none;transition:background .15s,color .15s}
+.news-card .src{font:800 14px/1 var(--f);letter-spacing:.06em;text-transform:uppercase;color:var(--red)}
+.news-card p{font:700 19px/1.35 var(--f);flex:1}
+.news-card .go{display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:15.5px;color:var(--ink2)}
+.news-card .go .ic{width:18px;height:18px}
+.news-card:hover{background:var(--ink);color:#fff}
+.news-card:hover .go{color:#fff}
+
+@media (max-width:1060px){.crews,.news{grid-template-columns:1fr}}
+@media (max-width:600px){
+  .crew-card{padding:22px 20px 24px}
+  .crew-card .k{width:44px;height:44px;margin-bottom:18px}
+  .crew-card h3{font-size:26px}
+  .crew-foot .btn{width:100%}
+  .news-card{padding:22px 20px}
+  .news-card p{font-size:18px}
+}

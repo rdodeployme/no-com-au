@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;700;800;900&family=Overpass+Mono:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css"><link rel="stylesheet" href="no.css?v=1792386202">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css"><link rel="stylesheet" href="no.css?v=1793848500">
 </head>
 <body class="page-home">
 <header class="site-head"><div class="wrap bar">
@@ -82,6 +82,24 @@
   </div>
 </section>
 
+<section class="sec white" id="crews">
+  <div class="wrap">
+    <div class="head-row">
+      <h2 class="h-l">Our crews clear it same day or next day.</h2>
+      <p class="lede">Where councils and land managers partner with us, a Recycle Group crew collects dumped rubbish from council roads, vacant blocks and private property.</p>
+    </div>
+    <div class="crews">
+      <div class="crew-card"><span class="k" id="ck-1"></span><h3>Two people and a truck</h3><p>Our standard dumping crew. They load roadside piles by hand: mattresses, couches, bags, whitegoods and the rest.</p></div>
+      <div class="crew-card"><span class="k" id="ck-2"></span><h3>Machines for big jobs</h3><p>Six machine crews, from a skid steer and truck up to excavators of 3 t and 15 t, with a grab for the heavy stuff.</p></div>
+      <div class="crew-card dark"><span class="k" id="ck-3"></span><h3>Same day or next day</h3><p>Every dumping collection is guaranteed same day or next day.</p></div>
+    </div>
+    <div class="crew-foot">
+      <p class="crew-line">The longer dumped rubbish sits, the more it grows. The faster it goes, the less people dump.</p>
+      <a class="btn ink lg" href="https://www.recycle.au" target="_blank" rel="noopener" id="crew-cta"></a>
+    </div>
+  </div>
+</section>
+
 <section class="sec" id="live">
   <div class="wrap">
     <div class="head-row">
@@ -95,6 +113,16 @@
         <a class="btn ink block" href="map.html" style="margin-top:12px">Open the live map</a>
       </div>
     </div>
+  </div>
+</section>
+
+<section class="sec tight" id="news">
+  <div class="wrap">
+    <div class="head-row">
+      <h2 class="h-l">It's in the news every week.</h2>
+      <p class="lede">Streets, rental homes and bush blocks across Melbourne are being used as dumping grounds. A few recent stories.</p>
+    </div>
+    <div class="news" id="news-list"></div>
   </div>
 </section>
 
@@ -127,7 +155,7 @@
       <details><summary>Will anyone know it was me?</summary><p>No. Your name and contact details aren't sent with the report. Add a phone number or email only if you want updates.</p></details>
       <details><summary>What shouldn't I touch?</summary><p>Anything that might be asbestos, chemicals, gas bottles or syringes. Keep clear and tap "Asbestos or chemicals?" in the app. If someone's in danger, call 000.</p></details>
       <details><summary>What if it's not on council land?</summary><p>We work out who's responsible from the spot you pin: the council, the state for main roads, VicTrack for rail land or Parks Victoria in a park. If we get it wrong, they pass it on in one tap and the clock keeps running.</p></details>
-      <details><summary>Who collects it?</summary><p>Whoever is responsible for the land decides. Where they partner with us, a Recycle Group crew collects it the next working day and recycles what can be recycled.</p></details>
+      <details><summary>Who collects it?</summary><p>Whoever is responsible for the land decides. Where they partner with us, a Recycle Group crew collects it same day or next day and recycles what can be recycled. Small piles go on a two-person truck; big clean-ups get a skid steer or excavator.</p></details>
       <details><summary>I saw who did it. Can I report them?</summary><p>Add the vehicle rego if you saw it. It goes to the council and EPA Victoria for investigation, nowhere else. We never publish names or number plates.</p></details>
       <details><summary>Who runs No More Dumping?</summary><p>It's a Recycle Group initiative. This site is a working prototype, so the reports on it are samples.</p></details>
     </div>
@@ -168,11 +196,23 @@
   var steps=[
     ['mail','It goes to the right people','The council for that street. The state if it\'s a main road, VicTrack on rail land, Parks Victoria in a park. Tyres, building waste and anything that might be hazardous also go to EPA Victoria.'],
     ['clock','The clock runs in public','Every report gets its own page with a live clock. Anyone can see when it was reported, who has it and when it went.'],
-    ['crew','Collected next working day','Where councils partner with us, a Recycle Group crew collects it the next working day. Same pile reported twice? We merge it, so nobody chases it twice.'],
+    ['crew','Collected same day or next day','Where councils partner with us, a Recycle Group crew collects it same day or next day. Same pile reported twice? We merge it, so nobody chases it twice.'],
     ['recycle','Recycled, not landfilled','Mattresses go to The Mattress Recycling Company. Steel, timber, e-waste and polystyrene are recovered, and furniture in good shape goes to charity partners before anything is pulled apart.']
   ];
   $('#loop').innerHTML=steps.map(function(s){return '<li><span class="k">'+I(s[0])+'</span><div><h3>'+s[1]+'</h3><p>'+s[2]+'</p></div></li>';}).join('');
   var rec=NO.store.get('NO-24755'); if(rec) $('#sample-receipt').innerHTML=NO.receiptHTML(rec);
+
+  /* crews */
+  $('#ck-1').innerHTML=I('crew'); $('#ck-2').innerHTML=I('truck'); $('#ck-3').innerHTML=I('clock');
+  $('#crew-cta').innerHTML='More at recycle.au'+I('right');
+
+  /* in the news: links out to the original posts */
+  var news=[
+    ['7NEWS Melbourne','A truckie is caught on camera tipping a load of waste onto a suburban street. "This is not a mistake or an accident."','https://www.facebook.com/share/19baMftVHn/','Facebook'],
+    ['Maggie Raworth','Rent to dump: Jacob rented out his Melbourne property, and it became an illegal dumping ground.','https://www.instagram.com/reel/DfB2w_OB0Z9/','Instagram'],
+    ['David Limbrick MP','A Victorian MP walks through a dumping site piled with rubbish, including a whole bunch of nang bottles.','https://www.facebook.com/share/v/1FCjskJAt1/','Facebook']
+  ];
+  $('#news-list').innerHTML=news.map(function(n){return '<a class="news-card" href="'+n[2]+'" target="_blank" rel="noopener"><span class="src">'+esc(n[0])+'</span><p>'+esc(n[1])+'</p><span class="go">Watch on '+n[3]+I('right')+'</span></a>';}).join('');
 
   /* live */
   var open=all.filter(function(r){return NO.status(r)!=='done';}).sort(function(a,b){return a.created-b.created;});
