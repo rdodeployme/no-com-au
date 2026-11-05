@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;700;800;900&family=Overpass+Mono:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css"><link rel="stylesheet" href="no.css?v=1792386202">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css"><link rel="stylesheet" href="no.css?v=1793858400">
 </head>
 <body class="page-report">
 <header class="rp-head">
@@ -135,14 +135,14 @@
   <div class="scrim" id="scrim" hidden></div>
 </main>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-<script src="no.js?v=1792386202"></script>
+<script src="no.js?v=1793858400"></script>
 <script>
 (function(){
   var $=NO.$, $$=NO.$$, I=NO.icon, esc=NO.esc;
   var R={photos:[],types:[],size:null,blocking:false,seen:'Not sure'};
   /* a QR sign can open the app already pinned to its spot: report.html?at=-38.1385,144.3489 */
   var AT=(function(){ var m=/[?&]at=(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/.exec(location.search); return m&&Math.abs(+m[1])<=90&&Math.abs(+m[2])<=180?{lat:+m[1],lon:+m[2]}:null; })();
-  var step=1, map=null, center=null, place=null, report=null, dupOf=null, dismissed={}, looking=false, lookSeq=0, lookT=null, mmap=null, demo=false;
+  var step=1, map=null, center=null, place=null, report=null, dupOf=null, dismissed={}, looking=false, lookSeq=0, lookT=null, mmap=null;
 
   /* static icons */
   $('#back').innerHTML=I('back'); $('#close').innerHTML=I('close'); $('#cs-close').innerHTML=I('close');
@@ -300,7 +300,6 @@
       seen:R.seen,blocking:R.blocking,notes:$('#notes').value.trim(),rego:$('#rego').value.trim().toUpperCase(),contact:'',
       to:rt.to,why:rt.why,cc:rt.cc,items:null,events:[{k:'reported',t:now},{k:'notified',t:now,to:rt.to}]};
     rt.cc.forEach(function(c){ r.events.push({k:'cc',t:now,to:c}); });
-    if(demo) r.demo=true;
     NO.store.add(r); report=r;
     show('done'); render();
     if(window.matchMedia('(min-width:761px)').matches) $('#cs-hint').classList.add('pulse');
@@ -446,57 +445,6 @@
 
   NO.onChange(function(){ if(report) render(); });
   show(1);
-
-  /* hooks used by Richard's version (tour.html) to drive the app */
-  var sending=null;
-  function quickSend(){
-    if(report) return Promise.resolve();
-    if(sending) return sending;
-    if(!R.photos.length){ R.photos=[NO.SAMPLE_PHOTO]; shots(); }
-    if(!R.types.length){ ['couch','mattress'].forEach(function(t){ var b=$('#tiles [data-t="'+t+'"]'); if(b) b.setAttribute('aria-pressed','true'); }); R.types=$$('#tiles .tile[aria-pressed=true]').map(function(x){return x.dataset.t;}); }
-    if(!R.size){ var z=$('#sizes [data-v="trailer"]'); if(z){ z.setAttribute('aria-pressed','true'); R.size='trailer'; } }
-    if(map){ var c=map.getCenter(); center={lat:c.lat,lon:c.lng}; }
-    if(!center) center={lat:NO.SPOT.lat,lon:NO.SPOT.lon};
-    sending=new Promise(function(res){
-      var done=false, go=function(p){ if(done) return; done=true; if(p&&p.ok) place=p; looking=false; send(); res(); };
-      if(place&&!looking) go(place); else { NO.lookup(center.lat,center.lon).then(go); setTimeout(function(){ go(null); },2500); }
-    });
-    return sending;
-  }
-  function bookNow(){ var b=$('#a-book'); if(b&&!b.disabled){ b.click(); var x=$('[data-book="Recycle Group crew"]'); if(x) x.click(); } }
-  function collectNow(){ var b=$('#a-done'); if(b&&!b.disabled){ b.click(); var x=$('#confirm-done'); if(x) x.click(); } }
-  window.NODEMO={
-    begin:function(){ demo=true; NO.store.purge(function(r){return r.demo;}); },
-    photo:function(){ if(report) return; R.photos=[NO.SAMPLE_PHOTO]; shots(); foot(); },
-    step:function(n){ if(report) return; show(n); },
-    pin:function(lat,lon){
-      if(report) return;
-      initMap();
-      setTimeout(function(){ map.setView([lat,lon],18,{animate:false}); onMove(); },120);
-      NO.lookup(lat,lon);
-    },
-    pick:function(types,size){
-      if(report) return;
-      types.forEach(function(t,i){ setTimeout(function(){ if(report) return; var b=$('#tiles [data-t="'+t+'"]'); if(b&&b.getAttribute('aria-pressed')!=='true') b.click(); },i*450); });
-      if(size) setTimeout(function(){ if(report) return; var s=$('#sizes [data-v="'+size+'"]'); if(s&&s.getAttribute('aria-pressed')!=='true') s.click(); },types.length*450+250);
-    },
-    send:function(){ return quickSend(); },
-    ensure:function(t){
-      return quickSend().then(function(){
-        var s=NO.status(cur());
-        if((t==='sched'||t==='done')&&(s==='open'||s==='ack')) bookNow();
-        if(t==='done'&&NO.status(cur())!=='done') collectNow();
-      });
-    },
-    status:function(){ var r=cur(); return r?NO.status(r):null; },
-    sheet:function(o,to){ if(window.matchMedia('(max-width:860px)').matches){ sheet(o); if(o) setTimeout(function(){ if(mmap) mmap.invalidateSize(); },60);
-      var c=$('#council'), x=to&&$(to); if(o&&x) c.scrollTo({top:Math.max(0,x.getBoundingClientRect().top-c.getBoundingClientRect().top+c.scrollTop-150),behavior:'smooth'}); } },
-    ack:function(){ var b=$('#a-ack'); if(b&&!b.disabled) b.click(); },
-    book:function(){ var b=$('#a-book'); if(b&&!b.disabled){ b.click(); setTimeout(function(){ var x=$('[data-book="Recycle Group crew"]'); if(x) x.click(); },900); } },
-    collect:function(){ var b=$('#a-done'); if(b&&!b.disabled){ b.click(); setTimeout(function(){ var x=$('#confirm-done'); if(x) x.click(); },1000); } },
-    toReceipt:function(){ var r=$('#d-receipt'), m=$('#main'); if(r&&r.firstChild) m.scrollTo({top:r.getBoundingClientRect().top-m.getBoundingClientRect().top+m.scrollTop-12,behavior:'smooth'}); },
-    id:function(){ return report&&report.id; }
-  };
 })();
 </script>
 </body>

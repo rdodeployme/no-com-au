@@ -510,16 +510,8 @@
   };
 
   /* ---------- page chrome ---------- */
-  /* Inside Richard's version (tour.html) pages run in a frame: keep them still and calm */
-  var inTour = false;
-  try { inTour = window.self !== window.top; } catch (e) { inTour = true; }
-  NO.inTour = inTour;
   NO.SPOT = { lat: -38.1385, lon: 144.3489 }; /* sample spot: Pakington St, Geelong West */
   NO.SAMPLE_PHOTO = "1703296958227-d01823347876";
-  if (inTour) {
-    document.documentElement.classList.add("in-tour");
-    if (window.L && L.Map) L.Map.mergeOptions({ zoomAnimation: false, fadeAnimation: false, markerZoomAnimation: false });
-  }
   document.addEventListener("click", function (e) {
     var b = e.target.closest("[data-menu]");
     if (b) { document.body.classList.toggle("menu-open"); b.setAttribute("aria-expanded", document.body.classList.contains("menu-open")); }
