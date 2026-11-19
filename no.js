@@ -281,8 +281,10 @@
   NO.status = function (r) {
     var k = (r.events || []).map(function (e) { return e.k; });
     if (k.indexOf("collected") > -1) return "done";
+    /* after a handover, only what the new owner has done counts */
+    k = k.slice(k.lastIndexOf("passed") + 1);
     if (k.indexOf("scheduled") > -1) return "sched";
-    if (k.indexOf("ack") > -1 || k.indexOf("passed") > -1) return "ack";
+    if (k.indexOf("ack") > -1) return "ack";
     return "open";
   };
   NO.LABEL = { open: "Sent, waiting", ack: "On it", sched: "Booked", done: "Collected" };
@@ -384,6 +386,7 @@
         if (e.k === "scheduled") {
           e.at = next7(created);
           if (willCollect && e.at + 3 * H > base - 25 * M) { e.at = Math.max(created + 2 * H, base - 6 * H); e.at -= e.at % H; }
+          else if (!willCollect && e.at + 4 * H < base) e.at = NO.window(base);
         }
         if (e.k === "collected") {
           var sc = r.events.filter(function (x) { return x.k === "scheduled"; })[0];
@@ -501,10 +504,10 @@
         var s = Math.min(1, max / Math.max(im.width, im.height)), c = document.createElement("canvas");
         c.width = Math.round(im.width * s); c.height = Math.round(im.height * s);
         c.getContext("2d").drawImage(im, 0, 0, c.width, c.height);
-        var out; try { out = c.toDataURL("image/jpeg", 0.72); } catch (e) { out = url; }
-        res(out);
+        var out; try { out = c.toDataURL("image/jpeg", 0.72); } catch (e) { out = null; }
+        URL.revokeObjectURL(url); res(out);
       };
-      im.onerror = function () { res(url); };
+      im.onerror = function () { URL.revokeObjectURL(url); res(null); };
       im.src = url;
     });
   };

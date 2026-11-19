@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;700;800;900&family=Overpass+Mono:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css"><link rel="stylesheet" href="no.css?v=1793858400">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css"><link rel="stylesheet" href="no.css?v=1795071600">
 </head>
 <body class="page-r">
 <header class="site-head"><div class="wrap bar">
@@ -36,7 +36,7 @@
 <p class="fine">Working prototype. Reports, clocks and figures on this site are samples and no emails are sent. Routing uses ABS council boundaries and OpenStreetMap data. Roadside photos from Unsplash. Plant photos from Recycle Group. Map tiles &copy; Esri.</p>
 </div></footer>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-<script src="no.js?v=1793858400"></script>
+<script src="no.js?v=1795071600"></script>
 <script>
 (function(){
   var $=NO.$, $$=NO.$$, I=NO.icon, esc=NO.esc, map=null;
@@ -45,7 +45,7 @@
   function render(){
     var r=NO.store.get(id), el=$('#rp');
     if(!r){ el.innerHTML='<div class="missing"><h1 class="h-l">We can\'t find that report.</h1><p class="lede" style="margin:18px 0 26px">Reports you make are kept in this browser while this is a prototype. Try the live map, or make a new report.</p><div class="cta-row"><a class="btn ink" href="map.html">Live map</a><a class="btn" href="report.html">Report dumping</a></div></div>'; return; }
-    document.title=r.id+' · '+NO.typeList(r.types)+' in '+r.suburb+' · No More Dumping';
+    document.title=r.id+' · '+NO.typeList(r.types)+(r.suburb&&r.suburb!=='Pinned location'?' in '+r.suburb:'')+' · No More Dumping';
     var s=NO.status(r), c=NO.collectedAt(r), due=NO.due(r.created), late=s!=='done'&&NO.overdue(r);
     var conf=r.events.filter(function(e){return e.k==='confirmed';}).reduce(function(a,e){return a+e.n;},0);
     var photos=r.photos||[];
@@ -78,7 +78,7 @@
     }
     var t=$('.thumbs'); if(t) t.onclick=function(e){var im=e.target.closest('img');if(!im)return;$$('img',t).forEach(function(x){x.classList.remove('on');});im.classList.add('on');$('#main-ph').src=NO.img(photos[+im.dataset.i],1200,900);};
     var p=$('#plus1'); if(p) p.onclick=function(){ if(NO.hasSeen(id)) return; NO.markSeen(id); var rr=NO.store.get(id); NO.addEvent(rr,'confirmed',{n:1}); NO.store.save(rr); NO.toast('Thanks. Added to the report.'); };
-    $('#share').onclick=function(){ var url=location.href; if(navigator.share) navigator.share({title:'Dumped rubbish reported to No More Dumping',url:url}).catch(function(){}); else if(navigator.clipboard) navigator.clipboard.writeText(url).then(function(){NO.toast('Link copied');}); };
+    $('#share').onclick=function(){ var url=location.href; if(navigator.share) navigator.share({title:'Dumped rubbish reported to No More Dumping',url:url}).catch(function(){}); else if(navigator.clipboard) navigator.clipboard.writeText(url).then(function(){NO.toast('Link copied');},function(){NO.toast(url);}); else NO.toast(url); };
   }
   render();
   if(/added=1/.test(location.search)) setTimeout(function(){NO.toast('Thanks. We\'ve added yours to this report.');},300);

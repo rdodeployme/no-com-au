@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;700;800;900&family=Overpass+Mono:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css"><link rel="stylesheet" href="no.css?v=1793858400">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css"><link rel="stylesheet" href="no.css?v=1795071600">
 </head>
 <body class="page-councils">
 <header class="site-head"><div class="wrap bar">
@@ -53,7 +53,7 @@
       <ul class="bul" id="clockbul"></ul>
     </div>
     <div>
-      <div class="bigclock done" style="max-width:420px;margin:0 auto"><div class="lbl">Collected in</div><div class="v" id="demo-clock">19:42:08</div><div class="s">Reported Tuesday 9:14am. Collected Wednesday 4:56am.</div></div>
+      <div class="bigclock done" style="max-width:420px;margin:0 auto"><div class="lbl">Collected in</div><div class="v" id="demo-clock">22:42:08</div><div class="s">Reported Tuesday 9:14am. Collected Wednesday 7:56am.</div></div>
       <div class="card" style="max-width:420px;margin:12px auto 0;color:var(--ink)"><ol class="tl" id="demo-tl"></ol></div>
     </div>
   </div>
@@ -129,7 +129,7 @@
 </div></footer>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-<script src="no.js?v=1793858400"></script>
+<script src="no.js?v=1795071600"></script>
 <script>
 (function(){
   var $=NO.$, I=NO.icon, esc=NO.esc;
@@ -149,8 +149,7 @@
   var B=[['Fewer follow-up calls','Residents watch the report move, so they don\'t ring to ask.'],['Your targets, not ours','Set the timeframe for each area. The clock shows progress against it.'],
     ['Handovers on the record','If it\'s VicTrack\'s or a private owner\'s, pass it on in one tap. Everyone can see who had it and when.'],['Good work gets seen','Every collection ends with a receipt showing what was picked up and where it went.']];
   $('#clockbul').innerHTML=B.map(function(b){return '<li>'+I('check')+'<div><b>'+b[0]+'</b><span>'+b[1]+'</span></div></li>';}).join('');
-  var t0=new Date(); t0.setDate(t0.getDate()-1);
-  $('#demo-tl').innerHTML=[['r','Reported by a resident','9:14am'],['','Sent to the council','9:14am'],['','Council is on it','10:02am'],['','Collection booked with a Recycle Group crew','10:05am'],['g','Collected','4:56am'],['g','Recycled, receipt issued','4:57am']]
+  $('#demo-tl').innerHTML=[['r','Reported by a resident','9:14am'],['','Sent to the council','9:14am'],['','Council is on it','10:02am'],['','Collection booked with a Recycle Group crew','10:05am'],['g','Collected','7:56am'],['g','Recycled, receipt issued','7:57am']]
     .map(function(x){return '<li class="on '+x[0]+'"><i></i><div>'+x[1]+'</div><span>'+x[2]+'</span></li>';}).join('');
   var PB=[['Hotspots that stand out','Sites reported again and again are flagged, so cameras, lighting and patrols go where they count.'],['Signs that start a report','QR signs at hotspots open the app with the spot already pinned.'],
     ['Evidence packs','Photos, times, location and any rego, bundled for your local laws team or EPA Victoria.'],['Make the legal way easier','The app points residents to hard waste bookings, drop-offs and pickups. Making common items free to drop off cuts dumping, and we can run free drop-off days with you.']];
@@ -161,7 +160,7 @@
     {t:'Collect and recycle',p:'Per collection or a monthly service',d:['Everything in Console','Recycle Group crews, next working day','Recycling, not landfill, with a receipt for every job','Recovery figures for your waste reporting','Free drop-off days at hotspots'],b:'Talk to us',f:false}
   ];
   $('#plans').innerHTML=PL.map(function(p){return '<div class="plan'+(p.f?' feat':'')+'"><span class="tag2">'+(p.f?'Most councils start here':'&nbsp;')+'</span><h3>'+p.t+'</h3><div class="pr">'+p.p+'</div><ul>'+p.d.map(function(x){return '<li>'+I('check')+'<span>'+x+'</span></li>';}).join('')+'</ul><a class="btn '+(p.f?'':'ink')+' block" href="'+(p.h||'#pilot')+'">'+p.b+'</a></div>';}).join('');
-  try{ new QRCode($('#qr'),{text:location.href.replace(/councils\.html.*$/,'report.html'),width:232,height:232,colorDark:'#141414',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M}); }catch(e){ $('#qr').innerHTML=I('sign'); }
+  try{ new QRCode($('#qr'),{text:new URL('report.html',location.href).href,width:232,height:232,colorDark:'#141414',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M}); }catch(e){ $('#qr').innerHTML=I('sign'); }
   /* ---------- a version of this page for each pilot council: councils.html?c=geelong ---------- */
   var SRC={
     gee:['City of Greater Geelong, Jan 2026','https://www.geelongcity.vic.gov.au/whats-happening/news-and-updates/city-crews-battle-illegal-dumping-ratepayers-bear-cost'],

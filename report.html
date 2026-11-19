@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;700;800;900&family=Overpass+Mono:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css"><link rel="stylesheet" href="no.css?v=1793858400">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css"><link rel="stylesheet" href="no.css?v=1795071600">
 </head>
 <body class="page-report">
 <header class="rp-head">
@@ -135,7 +135,7 @@
   <div class="scrim" id="scrim" hidden></div>
 </main>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-<script src="no.js?v=1793858400"></script>
+<script src="no.js?v=1795071600"></script>
 <script>
 (function(){
   var $=NO.$, $$=NO.$$, I=NO.icon, esc=NO.esc;
@@ -208,7 +208,7 @@
   /* ---------- step 1: photos ---------- */
   function addFiles(list){
     var files=Array.prototype.slice.call(list||[]).filter(function(f){return /^image\//.test(f.type);}).slice(0,4-R.photos.length);
-    Promise.all(files.map(function(f){return NO.compress(f,900);})).then(function(urls){ R.photos=R.photos.concat(urls); shots(); foot(); });
+    Promise.all(files.map(function(f){return NO.compress(f,900);})).then(function(urls){ var ok=urls.filter(Boolean); if(ok.length<urls.length) NO.toast('That photo couldn\'t be read. Try another, or skip it.'); R.photos=R.photos.concat(ok); shots(); foot(); });
   }
   function shots(){
     var n=R.photos.length;
@@ -237,7 +237,8 @@
     NO.store.all().forEach(function(r){ if(NO.status(r)!=='done') NO.marker(r,{interactive:false}).addTo(map); });
     map.on('moveend',onMove);
     setTimeout(function(){map.invalidateSize();onMove();},60);
-    try{ navigator.permissions.query({name:'geolocation'}).then(function(p){ if(p.state==='granted') locate(); }); }catch(e){}
+    /* a sign's pin wins over the phone's own location */
+    if(!AT){ try{ navigator.permissions.query({name:'geolocation'}).then(function(p){ if(p.state==='granted') locate(); }); }catch(e){} }
   }
   function onMove(){
     var c=map.getCenter(); center={lat:c.lat,lon:c.lng};
@@ -327,9 +328,11 @@
   }
   function timeline(r){
     var ev=r.events, last=function(k){return ev.filter(function(e){return e.k===k;}).pop();};
-    var c=last('collected'), a=last('ack'), b=last('scheduled'), rc=last('receipt'), rows=[];
+    var lp=-1; ev.forEach(function(e,i){ if(e.k==='passed') lp=i; });
+    var live=ev.slice(lp+1), lastLive=function(k){return live.filter(function(e){return e.k===k;}).pop();};
+    var c=last('collected'), a=lastLive('ack'), b=lastLive('scheduled'), rc=last('receipt'), rows=[];
     function row(on,txt,t,cls){ return '<li class="'+(on?'on ':'')+(cls||'')+'"><i></i><div>'+esc(txt)+'</div><span>'+(on&&t?NO.time(t):on?'':'Waiting')+'</span></li>'; }
-    ev.forEach(function(e){ if(['reported','notified','cc','confirmed','passed'].indexOf(e.k)>-1) rows.push(row(true,NO.eventText(e,r),e.t,e.k==='reported'?'r':'')); });
+    ev.forEach(function(e,i){ if(['reported','notified','cc','confirmed','passed'].indexOf(e.k)>-1||(i<lp&&(e.k==='ack'||e.k==='scheduled'))) rows.push(row(true,NO.eventText(e,r),e.t,e.k==='reported'?'r':'')); });
     if(a||!c) rows.push(row(!!a,a?NO.eventText(a,r):'On it',a&&a.t));
     if(b||!c) rows.push(row(!!b,b?NO.eventText(b,r):'Collection booked',b&&b.t));
     rows.push(row(!!c,c?NO.eventText(c,r):'Collected',c&&c.t,'g'));
@@ -344,7 +347,7 @@
   setInterval(ringTick,1000);
 
   $('#share').onclick=function(){
-    var r=cur(); if(!r) return; var url=location.href.replace(/report\.html.*$/,'r.html#'+r.id);
+    var r=cur(); if(!r) return; var url=new URL('r.html#'+r.id,location.href).href;
     if(navigator.share){ navigator.share({title:'Dumped rubbish reported to No More Dumping',url:url}).catch(function(){}); }
     else if(navigator.clipboard){ navigator.clipboard.writeText(url).then(function(){NO.toast('Link copied');},function(){NO.toast(url);}); }
     else NO.toast(url);
